@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import Stats from "three/examples/jsm/libs/stats.module";
+import { GUI } from "dat.gui";
 
 /*
 Before we can do anything with Three.js, we need 3 things:
@@ -113,19 +115,39 @@ function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  render();
+  // render();
 }
 // This event listener resize the scene with window, but if we add 1 to the PerspectiveCamera as apsect, its can be commented
 
+// Stats display FPS/performance box in the browser
+const stats = new Stats();
+document.body.appendChild(stats.dom);
+
+const gui = new GUI();
+const cubeFolder = gui.addFolder("Cube");
+// It groups the controls with a title in a tab
+cubeFolder.add(cube.rotation, "x", 0, Math.PI * 2);
+// Display controls, in this case, to rotation on x axle; Math.PI * 2 = 360
+cubeFolder.add(cube.rotation, "y", 0, Math.PI * 2);
+cubeFolder.add(cube.rotation, "z", 0, Math.PI * 2);
+// Display controls for the other axles
+
+const cameraFolder = gui.addFolder("Camera");
+cameraFolder.add(camera.position, "z", 0, 20); // Camera position was define previously in this code (camera.position.z = 2;)
+cameraFolder.open(); // Define the tab open once the page loads
+
+// Create the loop animation
 function animate() {
   requestAnimationFrame(animate);
   //60fps
 
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
-  /* cube2.rotation.y += 0.01; */
+  // cube.rotation.x += 0.01;
+  // cube.rotation.y += 0.01;
+  // /* cube2.rotation.y += 0.01; */
 
   render();
+
+  stats.update();
 }
 
 function render() {
@@ -138,4 +160,4 @@ function render() {
 }
 
 animate();
-//render();
+// render();
