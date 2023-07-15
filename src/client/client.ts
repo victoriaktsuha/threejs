@@ -95,39 +95,40 @@ document.body.appendChild(renderer5.domElement); */
 const controls = new OrbitControls(camera, renderer.domElement); // ! alows to the user interact rotating/zooming in and out the object (BoxGeometry())
 // controls.addEventListener("change", render);
 // !The line above allows to update the render just when we have some change, like when the user manipulate the object. In reverse, we're using the render in animation and resize.
-controls.target.set(8, 0, 0);
+controls.target.set(5, -2, -5);
 
-const light1 = new THREE.PointLight();
-light1.position.set(10, 10, 10); // ! set(x position, y position, z position)
-scene.add(light1);
+// const light1 = new THREE.PointLight();
+// light1.position.set(10, 10, 10); // ! set(x position, y position, z position)
+// scene.add(light1);
 
-const light2 = new THREE.PointLight();
-light2.position.set(-10, 10, 10);
-scene.add(light2);
+// const light2 = new THREE.PointLight();
+// light2.position.set(-50, -50, -50);
+// scene.add(light2);
 
-const object1 = new THREE.Mesh(
-  new THREE.SphereGeometry(),
-  new THREE.MeshPhongMaterial({ color: 0xff0000 })
-);
-object1.position.set(4, 0, 0);
-scene.add(object1);
-object1.add(new THREE.AxesHelper(3));
+// const object1 = new THREE.Mesh(
+//   new THREE.SphereGeometry(),
+//   new THREE.MeshPhongMaterial({ color: 0xff0000 })
+// );
+// object1.position.set(4, 0, 0); // ! the position of the parent will affect all of its child
+// scene.add(object1);
+// object1.add(new THREE.AxesHelper(3));
 
-const object2 = new THREE.Mesh(
-  new THREE.SphereGeometry(),
-  new THREE.MeshPhongMaterial({ color: 0x00ff00 })
-);
-object2.position.set(4, 0, 0);
-object1.add(object2); // ! Link the 'object2'(child) to 'object1'(parent)
-object2.add(new THREE.AxesHelper(3));
+// const object2 = new THREE.Mesh(
+//   new THREE.SphereGeometry(),
+//   new THREE.MeshPhongMaterial({ color: 0x00ff00 })
+// );
+// object2.position.set(4, 0, 0); // ! The 4 position on x axis will count from the parent position - local position (4) ≠ world position (4+4 = 8))
+// object1.add(object2); // ! Link the 'object2'(child) to 'object1'(parent)
+// object2.add(new THREE.AxesHelper(3));
 
-const object3 = new THREE.Mesh(
-  new THREE.SphereGeometry(),
-  new THREE.MeshPhongMaterial({ color: 0x0000ff })
-);
-object3.position.set(4, 0, 0);
-object2.add(object3); // ! Link the 'object3'(grandchild/child) to 'object2'(child/parent)
-object3.add(new THREE.AxesHelper(3));
+// const object3 = new THREE.Mesh(
+//   new THREE.SphereGeometry(),
+//   new THREE.MeshPhongMaterial({ color: 0x0000ff })
+// );
+// object3.position.set(4, 0, 0); // ! The 4 position on x axis will count from the parent position (4+4+4 = 12)
+// object2.add(object3); // ! Link the 'object3'(grandchild/child) to 'object2'(child/parent)
+// object3.add(new THREE.AxesHelper(3));
+// object3.add(new THREE.PointLight(0xf0f000, 10)); // ! this emits light from the object itself (lamp/bulb)
 
 /* new OrbitControls(camera, renderer1.domElement);
 new OrbitControls(camera2, renderer2.domElement);
@@ -136,18 +137,35 @@ new OrbitControls(camera4, renderer4.domElement);
 new OrbitControls(camera5, renderer5.domElement); */
 // ! Different cameras defined before can allows us to interact with canvas separately
 
-// const geometry = new THREE.BoxGeometry();
+const boxGeometry = new THREE.BoxGeometry(); // ! store cube object - here can be define width, height, lenght, etc..
 // /* const geometry = new THREE.TorusKnotGeometry(); */
-// const material = new THREE.MeshBasicMaterial({
-//   color: 0x00ff00, // ! change color
-//   wireframe: true, // ! give a outline (true)/solid (false) structure view
-// });
+const sphereGeometry = new THREE.SphereGeometry(); // ! store sphere object
+const icosahedronGeometry = new THREE.IcosahedronGeometry(); // ! store icosahedron object
 
-// const cube = new THREE.Mesh(geometry, material);
+console.log(boxGeometry); // ! here we can access the array with all the points of the object stored by the Buffergeometrys
+
+// ! Define the material (in general)
+const material = new THREE.MeshBasicMaterial({
+  color: 0x00ff00, // ! change color
+  wireframe: true, // ! give a outline (true)/solid (false) structure view
+});
+
+// ! create cube object
+const cube = new THREE.Mesh(boxGeometry, material); // ! when we crate a mesh, the constructor needs some kind of geometry, and the geometry that we're passing has BufferGeometry as base class, like all geometries. It saves all data in buffers to reduce memory and CPU cycles
 // /* cube.scale.x = 0.5;
 // cube.scale.y = 0.5;
 // cube.scale.z = 0.5; */
-// scene.add(cube);
+cube.position.x = 5; // ! define cube position
+scene.add(cube); // ! add cube to the scene
+
+// ! create sphere object
+const sphere = new THREE.Mesh(sphereGeometry, material);
+sphere.position.x = -55;
+scene.add(sphere);
+
+// ! create icosahedron object
+const icosahedron = new THREE.Mesh(icosahedronGeometry, material);
+scene.add(icosahedron);
 
 /* const cube2 = new THREE.Mesh(geometry, material);
 scene2.add(cube2); */
@@ -163,71 +181,221 @@ function onWindowResize() {
 }
 // ! This event listener resize the scene with window, but if we add 1 to the PerspectiveCamera as apsect, its can be commented
 
-const gui = new GUI();
-
-/* Folders for cube object - Hide when publish*/
-// const cubeFolder = gui.addFolder("Cube");
-// // ! It groups the controls with a title in a tab
-// cubeFolder.open();
-// // ! Define the tab open once the page loads
-// cubeFolder.add(cube, "visible");
-// // ! Gives to the browser controls an option to enable/disable the obejct visibility
-
-// const cubeRotationFolder = gui.addFolder("Rotation");
-// cubeRotationFolder.add(cube.rotation, "x", 0, Math.PI * 2);
-// // ! Display controls in the page, in this case, to rotation on x axle, delivering 0 as minimun and Math.PI * 2 (= 360) as maximum
-// cubeRotationFolder.add(cube.rotation, "y", 0, Math.PI * 2);
-// cubeRotationFolder.add(cube.rotation, "z", 0, Math.PI * 2);
-// // ! Display controls for the other axles
-// cubeRotationFolder.open();
-
-// const cubePositionFolder = gui.addFolder("Position");
-// cubePositionFolder.add(cube.position, "x", -10, 10, 2);
-// cubePositionFolder.add(cube.position, "y", -10, 10, 2);
-// cubePositionFolder.add(cube.position, "z", -10, 10, 2);
-// // ! the '2' value is for 'step' argument, which represents the 'jump' in the control values change
-// cubePositionFolder.open();
-
-// const cubeScaleFolder = gui.addFolder("Scale");
-// cubeScaleFolder.add(cube.scale, "x", -5, 5);
-// // ! Display controls, in this case, to rotation on x axle; Math.PI * 2 = 360
-// cubeScaleFolder.add(cube.scale, "y", -5, 5);
-// cubeScaleFolder.add(cube.scale, "z", -5, 5);
-// // ! Display controls for the other axles
-// cubeScaleFolder.open();
-
-// const cameraFolder = gui.addFolder("Camera");
-// cameraFolder.add(camera.position, "z", 0, 20); // ! Camera position was define previously in this code (camera.position.z = 2;)
-// cameraFolder.open();
-
-/* Folders for Sphere objects - Hide when publish*/
-const object1Folder = gui.addFolder("Object1 - RED");
-object1Folder.add(object1.position, "x", 0, 10, 0.01).name("X Position");
-object1Folder
-  .add(object1.rotation, "x", 0, Math.PI * 2, 0.01)
-  .name("X Rotation");
-object1Folder.add(object1.scale, "x", 0, 2, 0.01).name("X Scale");
-object1Folder.open();
-
-const object2Folder = gui.addFolder("Object2 - GREEN");
-object2Folder.add(object2.position, "x", 0, 10, 0.01).name("X Position");
-object2Folder
-  .add(object2.rotation, "x", 0, Math.PI * 2, 0.01)
-  .name("X Rotation");
-object2Folder.add(object2.scale, "x", 0, 2, 0.01).name("X Scale");
-object2Folder.open();
-
-const object3Folder = gui.addFolder("Object3 - BLUE");
-object3Folder.add(object3.position, "x", 0, 10, 0.01).name("X Position");
-object3Folder
-  .add(object3.rotation, "x", 0, Math.PI * 2, 0.01)
-  .name("X Rotation");
-object3Folder.add(object3.scale, "x", 0, 2, 0.01).name("X Scale");
-object3Folder.open();
-
 // ! Stats display FPS/performance box in the browser
 const stats = new Stats();
 document.body.appendChild(stats.dom);
+
+const gui = new GUI();
+
+/* Folders for cube object - Hide when publish*/
+const cubeFolder = gui.addFolder("Cube");
+// ! It groups the controls with a title in a tab
+cubeFolder.open();
+// ! Define the tab open once the page loads
+cubeFolder.add(cube, "visible", true);
+// ! Gives to the browser controls an option to enable/disable the obejct visibility
+
+const cubeRotationFolder = gui.addFolder("Rotation");
+cubeRotationFolder.add(cube.rotation, "x", 0, Math.PI * 2);
+// ! Display controls in the page, in this case, to rotation on x axle, delivering 0 as minimun and Math.PI * 2 (= 360) as maximum
+cubeRotationFolder.add(cube.rotation, "y", 0, Math.PI * 2);
+cubeRotationFolder.add(cube.rotation, "z", 0, Math.PI * 2);
+// ! Display controls for the other axles
+cubeRotationFolder.open();
+
+const cubePositionFolder = gui.addFolder("Position");
+cubePositionFolder.add(cube.position, "x", -10, 10, 2);
+cubePositionFolder.add(cube.position, "y", -10, 10, 2);
+cubePositionFolder.add(cube.position, "z", -10, 10, 2);
+// ! the '2' value is for 'step' argument, which represents the 'jump' in the control values change
+cubePositionFolder.open();
+
+const cubeScaleFolder = gui.addFolder("Scale");
+cubeScaleFolder.add(cube.scale, "x", -5, 5); //.onFinishChange(() => console.dir(cube.geometry))
+// ! Display controls, in this case, to rotation on x axle; Math.PI * 2 = 360
+cubeScaleFolder.add(cube.scale, "y", -5, 5);
+cubeScaleFolder.add(cube.scale, "z", -5, 5);
+// ! Display controls for the other axles
+cubeScaleFolder.open();
+
+const cameraFolder = gui.addFolder("Camera");
+cameraFolder.add(camera.position, "x", 0, 20); // ! Camera position was define previously in this code (camera.position.z = 2;)
+cameraFolder.add(camera.position, "y", 0, 20);
+cameraFolder.add(camera.position, "z", 0, 20);
+cameraFolder.open();
+
+/* Folders for Sphere objects - Hide when publish*/
+// const object1Folder = gui.addFolder("Object1 - RED");
+// object1Folder.add(object1.position, "x", 0, 10, 0.01).name("X Position");
+// object1Folder.add(object1.position, "y", 0, 10, 0.01).name("Y Position");
+// object1Folder.add(object1.position, "z", 0, 10, 0.01).name("Z Position");
+// object1Folder
+//   .add(object1.rotation, "x", 0, Math.PI * 2, 0.01)
+//   .name("X Rotation");
+// object1Folder
+//   .add(object1.rotation, "y", 0, Math.PI * 2, 0.01)
+//   .name("Y Rotation");
+// object1Folder
+//   .add(object1.rotation, "z", 0, Math.PI * 2, 0.01)
+//   .name("Z Rotation");
+// object1Folder.add(object1.scale, "x", 0, 2, 0.01).name("X Scale");
+// object1Folder.add(object1.scale, "y", 0, 2, 0.01).name("Y Scale");
+// object1Folder.add(object1.scale, "z", 0, 2, 0.01).name("Z Scale");
+// object1Folder.open();
+
+// const object2Folder = gui.addFolder("Object2 - GREEN");
+// object2Folder.add(object2.position, "x", 0, 10, 0.01).name("X Position");
+// object2Folder.add(object2.position, "y", 0, 10, 0.01).name("Y Position");
+// object2Folder.add(object2.position, "z", 0, 10, 0.01).name("Z Position");
+// object2Folder
+//   .add(object2.rotation, "x", 0, Math.PI * 2, 0.01)
+//   .name("X Rotation");
+// object2Folder
+//   .add(object2.rotation, "y", 0, Math.PI * 2, 0.01)
+//   .name("Y Rotation");
+// object2Folder
+//   .add(object2.rotation, "z", 0, Math.PI * 2, 0.01)
+//   .name("Z Rotation");
+// object2Folder.add(object2.scale, "x", 0, 2, 0.01).name("X Scale");
+// object2Folder.add(object2.scale, "y", 0, 2, 0.01).name("Y Scale");
+// object2Folder.add(object2.scale, "z", 0, 2, 0.01).name("Z Scale");
+// object2Folder.open();
+
+// const object3Folder = gui.addFolder("Object3 - BLUE");
+// object3Folder.add(object3.position, "x", 0, 10, 0.01).name("X Position");
+// object3Folder.add(object3.position, "y", 0, 10, 0.01).name("Y Position");
+// object3Folder.add(object3.position, "z", 0, 10, 0.01).name("Z Position");
+// object3Folder
+//   .add(object3.rotation, "x", 0, Math.PI * 2, 0.01)
+//   .name("X Rotation");
+// object3Folder
+//   .add(object3.rotation, "y", 0, Math.PI * 2, 0.01)
+//   .name("Y Rotation");
+// object3Folder
+//   .add(object3.rotation, "z", 0, Math.PI * 2, 0.01)
+//   .name("Z Rotation");
+// object3Folder.add(object3.scale, "x", 0, 2, 0.01).name("X Scale");
+// object3Folder.add(object3.scale, "y", 0, 2, 0.01).name("Y Scale");
+// object3Folder.add(object3.scale, "z", 0, 2, 0.01).name("Z Scale");
+// object3Folder.open();
+
+// ! Create cube GUI properties
+const cubeData = {
+  width: 1,
+  height: 1,
+  depth: 1,
+  widthSegments: 1,
+  heightSegments: 1,
+  depthSegments: 1,
+};
+
+// ! Define and add cube properties to GUI with min and max values
+const cubePropertiesFolder = cubeFolder.addFolder("Properties");
+cubePropertiesFolder
+  .add(cubeData, "width", 1, 30)
+  .onChange(regenerateBoxGeometry)
+  .onFinishChange(() => console.dir(cube.geometry));
+cubePropertiesFolder
+  .add(cubeData, "height", 1, 30)
+  .onChange(regenerateBoxGeometry);
+cubePropertiesFolder
+  .add(cubeData, "depth", 1, 30)
+  .onChange(regenerateBoxGeometry);
+cubePropertiesFolder
+  .add(cubeData, "widthSegments", 1, 30)
+  .onChange(regenerateBoxGeometry);
+cubePropertiesFolder
+  .add(cubeData, "heightSegments", 1, 30)
+  .onChange(regenerateBoxGeometry);
+cubePropertiesFolder
+  .add(cubeData, "depthSegments", 1, 30)
+  .onChange(regenerateBoxGeometry);
+
+function regenerateBoxGeometry() {
+  const newGeometry = new THREE.BoxGeometry(
+    cubeData.width,
+    cubeData.height,
+    cubeData.depth,
+    cubeData.widthSegments,
+    cubeData.heightSegments,
+    cubeData.depthSegments
+  );
+  // ! Replace builtin properties for the new ones
+  cube.geometry.dispose();
+  cube.geometry = newGeometry;
+}
+
+const sphereData = {
+  radius: 1,
+  widthSegments: 8,
+  heightSegments: 6,
+  phiStart: 0,
+  phiLenght: Math.PI * 2,
+  thetaStart: 0,
+  thetaLenght: Math.PI,
+};
+
+const sphereFolder = gui.addFolder("Sphere");
+const spherePropertiesFolder = sphereFolder.addFolder("Properties");
+spherePropertiesFolder
+  .add(sphereData, "radius", 0.1, 30)
+  .onChange(regenerateSphereGeometry);
+spherePropertiesFolder
+  .add(sphereData, "widthSegments", 1, 32)
+  .onChange(regenerateSphereGeometry);
+spherePropertiesFolder
+  .add(sphereData, "heightSegments", 1, 16)
+  .onChange(regenerateSphereGeometry);
+spherePropertiesFolder
+  .add(sphereData, "phiStart", 0, Math.PI * 2)
+  .onChange(regenerateSphereGeometry);
+spherePropertiesFolder
+  .add(sphereData, "phiLenght", 0, Math.PI * 2)
+  .onChange(regenerateSphereGeometry);
+spherePropertiesFolder
+  .add(sphereData, "thetaStart", 0, Math.PI * 2)
+  .onChange(regenerateSphereGeometry);
+spherePropertiesFolder
+  .add(sphereData, "thetaLenght", 0, Math.PI * 2)
+  .onChange(regenerateSphereGeometry);
+
+function regenerateSphereGeometry() {
+  const newGeometry = new THREE.SphereGeometry(
+    sphereData.radius,
+    sphereData.widthSegments,
+    sphereData.heightSegments,
+    sphereData.phiStart,
+    sphereData.phiLenght,
+    sphereData.thetaStart,
+    sphereData.thetaLenght
+  );
+  sphere.geometry.dispose();
+  sphere.geometry = newGeometry;
+}
+
+const icosahedronData = {
+  radius: 1,
+  detail: 0,
+};
+
+const icosahedronFolder = gui.addFolder("Iconsahedron");
+const icosahedronPropertiesFolder = icosahedronFolder.addFolder("Properties");
+icosahedronPropertiesFolder
+  .add(icosahedronData, "radius", 0.1, 10)
+  .onChange(regenerateIconsahedronGeometry);
+icosahedronPropertiesFolder
+  .add(icosahedronData, "detail", 0, 5)
+  .step(1)
+  .onChange(regenerateIconsahedronGeometry);
+
+function regenerateIconsahedronGeometry() {
+  const newGeometry = new THREE.IcosahedronGeometry(
+    icosahedronData.radius,
+    icosahedronData.detail
+  );
+  icosahedron.geometry.dispose();
+  icosahedron.geometry = newGeometry;
+}
 
 const debug = document.getElementById("debug1") as HTMLDivElement;
 
@@ -239,40 +407,114 @@ function animate() {
   // cube.rotation.y += 0.01;
   // /* cube2.rotation.y += 0.01; */
 
-  controls.update();
+  // controls.update();
   render();
 
-  const object1WorldPosition = new THREE.Vector3();
-  object1.getWorldPosition(object1WorldPosition);
+  // const object1WorldPosition = new THREE.Vector3();
+  // object1.getWorldPosition(object1WorldPosition);
 
-  const object2WorldPosition = new THREE.Vector3();
-  object2.getWorldPosition(object2WorldPosition);
+  // const object1WorldRotation = new THREE.Quaternion();
+  // object1.getWorldQuaternion(object1WorldRotation);
 
-  const object3WorldPosition = new THREE.Vector3();
-  object3.getWorldPosition(object3WorldPosition);
+  // const object1WorldScale = new THREE.Vector3();
+  // object1.getWorldScale(object1WorldScale);
+
+  // const object2WorldPosition = new THREE.Vector3();
+  // object2.getWorldPosition(object2WorldPosition);
+
+  // const object2WorldRotation = new THREE.Quaternion();
+  // object2.getWorldQuaternion(object2WorldRotation);
+
+  // const object2WorldScale = new THREE.Vector3();
+  // object2.getWorldScale(object2WorldScale);
+
+  // const object3WorldPosition = new THREE.Vector3();
+  // object3.getWorldPosition(object3WorldPosition);
+
+  // const object3WorldRotation = new THREE.Quaternion();
+  // object3.getWorldQuaternion(object3WorldRotation);
+
+  // const object3WorldScale = new THREE.Vector3();
+  // object3.getWorldScale(object3WorldScale);
 
   debug.innerText =
-    "Red\n" +
-    "Local Pos X : " +
-    object1.position.x.toFixed(2) + // ! toFixed(argument) define the decimals number on the "debug1"
-    "\n" +
-    "World Pos X : " +
-    object1WorldPosition.x.toFixed(2) +
-    "\n" +
-    "\nGreen\n" +
-    "Local Pos X : " +
-    object2.position.x.toFixed(2) +
-    "\n" +
-    "World Pos X : " +
-    object2WorldPosition.x.toFixed(2) +
-    "\n" +
-    "\nBlue\n" +
-    "Local Pos X : " +
-    object3.position.x.toFixed(2) +
-    "\n" +
-    "World Pos X : " +
-    object3WorldPosition.x.toFixed(2) +
-    "\n";
+    // "Red\n\n" +
+    // "Local Pos X : " +
+    // object1.position.x.toFixed(2) + // ! toFixed(argument) define the decimals number on the "debug1"
+    // "\n" +
+    // "Local Pos Y : " +
+    // object1.position.y.toFixed(2) +
+    // "\n" +
+    // "Local Pos Z : " +
+    // object1.position.z.toFixed(2) +
+    // "\n\n" +
+    // "Local Rot X : " +
+    // object1.rotation.x.toFixed(2) +
+    // "\n" +
+    // "Local Rot Y : " +
+    // object1.rotation.y.toFixed(2) +
+    // "\n" +
+    // "Local Rot Z : " +
+    // object1.rotation.z.toFixed(2) +
+    // "\n\n" +
+    // "World Pos X : " +
+    // object1WorldPosition.x.toFixed(2) +
+    // "\n" +
+    // "World Pos Y : " +
+    // object1WorldPosition.y.toFixed(2) +
+    // "\n" +
+    // "World Pos Z : " +
+    // object1WorldPosition.z.toFixed(2) +
+    // "\n\n" +
+    // "World Rot X : " +
+    // object1WorldRotation.x.toFixed(2) +
+    // "\n" +
+    // "World Rot Y : " +
+    // object1WorldRotation.y.toFixed(2) +
+    // "\n" +
+    // "World Rot Z : " +
+    // object1WorldRotation.z.toFixed(2) +
+    // "\n" +
+    // "\nGreen\n\n" +
+    // "Local Pos X : " +
+    // object2.position.x.toFixed(2) +
+    // "\n" +
+    // "Local Pos Y : " +
+    // object2.position.y.toFixed(2) +
+    // "\n" +
+    // "Local Pos Z : " +
+    // object2.position.z.toFixed(2) +
+    // "\n" +
+    // "World Pos X : " +
+    // object2WorldPosition.x.toFixed(2) +
+    // "\n" +
+    // "World Pos Y : " +
+    // object2WorldPosition.y.toFixed(2) +
+    // "\n" +
+    // "World Pos Z : " +
+    // object2WorldPosition.z.toFixed(2) +
+    // "\n" +
+    // "\nBlue\n\n" +
+    // "Local Pos X : " +
+    // object3.position.x.toFixed(2) +
+    // "\n" +
+    // "Local Pos Y : " +
+    // object3.position.y.toFixed(2) +
+    // "\n" +
+    // "Local Pos Z : " +
+    // object3.position.z.toFixed(2) +
+    // "\n" +
+    // "World Pos X : " +
+    // object3WorldPosition.x.toFixed(2) +
+    // "\n" +
+    // "World Pos Y : " +
+    // object3WorldPosition.y.toFixed(2) +
+    // "\n" +
+    // "World Pos Z : " +
+    // object3WorldPosition.z.toFixed(2) +
+    // "\n";
+
+    "Matrix\n" + cube.matrix.elements.toString().replace(/,/g, "\n");
 
   stats.update();
 }
