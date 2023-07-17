@@ -74,7 +74,7 @@ const renderer4 = new THREE.WebGLRenderer({ canvas: canvas4 });
 const canvas5 = document.getElementById("c5") as HTMLCanvasElement;
 const renderer5 = new THREE.WebGLRenderer({ canvas: canvas5 }); */
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer(); // ! 'new' is added just for constructors
 // ! Renderer: displays the scene onto a HTML Canvas Element. By default it uses WebGL. WebGL allows GPU-accelerated image processing and effects as the renderer creates the 2D image for the Canvas.
 renderer.setSize(window.innerWidth, window.innerHeight);
 /* renderer1.setSize(200, 200);
@@ -107,7 +107,7 @@ new OrbitControls(camera, renderer.domElement); // ! alows to the user interact 
 
 // const object1 = new THREE.Mesh(
 //   new THREE.SphereGeometry(),
-//   new THREE.MeshPhongMaterial({ color: 0xff0000 })
+//   new THREE.MeshPhongMaterial({ color: 0xff0000 }) // ! '0x' in three.js is replacing '#' from HTML
 // );
 // object1.position.set(4, 0, 0); // ! the position of the parent will affect all of its child
 // scene.add(object1);
@@ -139,7 +139,7 @@ new OrbitControls(camera5, renderer5.domElement); */
 
 const boxGeometry = new THREE.BoxGeometry(); // ! store cube object - here can be define width, height, lenght, etc..
 const sphereGeometry = new THREE.SphereGeometry(); // ! store sphere object
-const icosahedronGeometry = new THREE.IcosahedronGeometry(); // ! store icosahedron object
+const icosahedronGeometry = new THREE.IcosahedronGeometry(1, 0); // ! store icosahedron object
 const planeGeometry = new THREE.PlaneGeometry(); // ! store plane object
 const TorusKnotGeometry = new THREE.TorusKnotGeometry(); // ! store knot object
 
@@ -154,8 +154,23 @@ console.log(boxGeometry); // ! here we can access the array with all the points 
 // material.transparent = true; // ! Attributes without GUI
 // material.opacity = 0.25;
 
-const material = new THREE.MeshBasicMaterial();
+const material = new THREE.MeshBasicMaterial(); // ! MeshBasicMaterial doesn't have 'shadows', object get flat
 // const material = new THREE.MeshNormalMaterial();
+
+const texture = new THREE.TextureLoader().load("img/grid.png");
+material.map = texture; // ! apply texture loaded above to material defined previously - texture ≠ color
+const envTexture = new THREE.CubeTextureLoader().load([
+  "img/px_50.png",
+  "img/nx_50.png",
+  "img/py_50.png",
+  "img/ny_50.png",
+  "img/nz_50.png",
+  "img/pz_50.png",
+]); // ! these 6 images represent the 'up' view, the 'front' view and the 'down' view - 'both' sides
+envTexture.mapping = THREE.CubeReflectionMapping; // ! Apply the 6 images in a 360º view
+// envTexture.mapping = THREE.CubeRefractionMapping;
+material.envMap = envTexture;
+// material.needsUpdate = true;
 
 // ! create cube object
 const cube = new THREE.Mesh(boxGeometry, material); // ! when we crate a mesh, the constructor needs some kind of geometry, and the geometry that we're passing has BufferGeometry as base class, like all geometries. It saves all data in buffers to reduce memory and CPU cycles
@@ -209,6 +224,12 @@ const options = {
     FrontSide: THREE.FrontSide, // ! Same as 'material.side = THREE.Frontside'
     BackSide: THREE.BackSide, // ! A good option for environments like a house, you can see inside the object
     DoubleSide: THREE.DoubleSide,
+  },
+  // ! Options when combining layers of textures
+  combine: {
+    MultiplyOperation: THREE.MultiplyOperation, // ! Mix textures
+    MixOperation: THREE.MixOperation, // ! overlap the layers and the underneath layer can be seen when the upper layer reflectivity is changed
+    AddOperation: THREE.AddOperation, // ! add upper texture to the underneath texture according to the reflectivity
   },
 };
 
@@ -441,8 +462,27 @@ materialFolder
   .onChange(() => updateMaterial());
 materialFolder.open();
 
+var data = {
+  color: material.color.getHex(),
+};
+
+const meshBasicMaterialFolder = gui.addFolder("THREE.MeshBasicMaterial");
+meshBasicMaterialFolder.addColor(data, "color").onChange(() => {
+  material.color.setHex(Number(data.color.toString().replace("#", "0x")));
+});
+meshBasicMaterialFolder.add(material, "wireframe"); // ! Display a checkbox on GUI to toggle between wireframe or material
+// ! Remembering: color and wireframe can be set on the 'const material'
+// meshBasicMaterialFolder.add(material, "wireframeLinewidth", 0, 10); //! deprecated
+meshBasicMaterialFolder
+  .add(material, "combine", options.combine)
+  .onChange(() => updateMaterial()); // ! use to combine layers of textures
+meshBasicMaterialFolder.add(material, "reflectivity", 0, 1); // ! Control how much the texture will appear, like opacity
+meshBasicMaterialFolder.add(material, "refractionRatio", 0, 1); // ! apply just for 'CubeRefractionMapping' changing the 'deep' of the image
+meshBasicMaterialFolder.open();
+
 function updateMaterial() {
   material.side = Number(material.side) as THREE.Side;
+  material.combine = Number(material.combine) as THREE.Combine;
   material.needsUpdate = true;
 }
 
