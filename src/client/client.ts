@@ -139,7 +139,7 @@ new OrbitControls(camera5, renderer5.domElement); */
 
 const boxGeometry = new THREE.BoxGeometry(); // ! store cube object - here can be define width, height, lenght, etc..
 const sphereGeometry = new THREE.SphereGeometry(); // ! store sphere object
-const icosahedronGeometry = new THREE.IcosahedronGeometry(1, 0); // ! store icosahedron object
+const icosahedronGeometry = new THREE.IcosahedronGeometry(1, 0); // ! store icosahedron object - (size/deep, more/less points; more points = more round; don't apply to negative number)
 const planeGeometry = new THREE.PlaneGeometry(); // ! store plane object
 const TorusKnotGeometry = new THREE.TorusKnotGeometry(); // ! store knot object
 
@@ -154,22 +154,22 @@ console.log(boxGeometry); // ! here we can access the array with all the points 
 // material.transparent = true; // ! Attributes without GUI
 // material.opacity = 0.25;
 
-const material = new THREE.MeshBasicMaterial(); // ! MeshBasicMaterial doesn't have 'shadows', object get flat
-// const material = new THREE.MeshNormalMaterial();
+// const material = new THREE.MeshBasicMaterial(); // ! MeshBasicMaterial doesn't have 'shadows', object get flat
+const material = new THREE.MeshNormalMaterial(); // ! Doesn't need lighting
 
-const texture = new THREE.TextureLoader().load("img/grid.png");
-material.map = texture; // ! apply texture loaded above to material defined previously - texture ≠ color
-const envTexture = new THREE.CubeTextureLoader().load([
-  "img/px_50.png",
-  "img/nx_50.png",
-  "img/py_50.png",
-  "img/ny_50.png",
-  "img/nz_50.png",
-  "img/pz_50.png",
-]); // ! these 6 images represent the 'up' view, the 'front' view and the 'down' view - 'both' sides
-envTexture.mapping = THREE.CubeReflectionMapping; // ! Apply the 6 images in a 360º view
+// const texture = new THREE.TextureLoader().load("img/grid.png");
+// material.map = texture; // ! apply texture loaded above to material defined previously - texture ≠ color
+// const envTexture = new THREE.CubeTextureLoader().load([
+//   "img/px_50.png",
+//   "img/nx_50.png",
+//   "img/py_50.png",
+//   "img/ny_50.png",
+//   "img/nz_50.png",
+//   "img/pz_50.png",
+// ]); // ! these 6 images represent the 'up' view, the 'front' view and the 'down' view - 'both' sides
+// envTexture.mapping = THREE.CubeReflectionMapping; // ! Apply the 6 images in a 360º view
 // envTexture.mapping = THREE.CubeRefractionMapping;
-material.envMap = envTexture;
+// material.envMap = envTexture;
 // material.needsUpdate = true;
 
 // ! create cube object
@@ -226,11 +226,11 @@ const options = {
     DoubleSide: THREE.DoubleSide,
   },
   // ! Options when combining layers of textures
-  combine: {
-    MultiplyOperation: THREE.MultiplyOperation, // ! Mix textures
-    MixOperation: THREE.MixOperation, // ! overlap the layers and the underneath layer can be seen when the upper layer reflectivity is changed
-    AddOperation: THREE.AddOperation, // ! add upper texture to the underneath texture according to the reflectivity
-  },
+  // combine: {
+  //   MultiplyOperation: THREE.MultiplyOperation, // ! Mix textures
+  //   MixOperation: THREE.MixOperation, // ! overlap the layers and the underneath layer can be seen when the upper layer reflectivity is changed
+  //   AddOperation: THREE.AddOperation, // ! add upper texture to the underneath texture according to the reflectivity
+  // },
 };
 
 const gui = new GUI();
@@ -462,27 +462,37 @@ materialFolder
   .onChange(() => updateMaterial());
 materialFolder.open();
 
-var data = {
-  color: material.color.getHex(),
-};
+/* Folder for MeshBasicMaterial */
+// var data = {
+//   color: material.color.getHex(),
+// };
 
-const meshBasicMaterialFolder = gui.addFolder("THREE.MeshBasicMaterial");
-meshBasicMaterialFolder.addColor(data, "color").onChange(() => {
-  material.color.setHex(Number(data.color.toString().replace("#", "0x")));
-});
-meshBasicMaterialFolder.add(material, "wireframe"); // ! Display a checkbox on GUI to toggle between wireframe or material
+// const meshBasicMaterialFolder = gui.addFolder("THREE.MeshBasicMaterial");
+// meshBasicMaterialFolder.addColor(data, "color").onChange(() => {
+//   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
+// });
+// meshBasicMaterialFolder.add(material, "wireframe"); // ! Display a checkbox on GUI to toggle between wireframe or material
 // ! Remembering: color and wireframe can be set on the 'const material'
 // meshBasicMaterialFolder.add(material, "wireframeLinewidth", 0, 10); //! deprecated
-meshBasicMaterialFolder
-  .add(material, "combine", options.combine)
-  .onChange(() => updateMaterial()); // ! use to combine layers of textures
-meshBasicMaterialFolder.add(material, "reflectivity", 0, 1); // ! Control how much the texture will appear, like opacity
-meshBasicMaterialFolder.add(material, "refractionRatio", 0, 1); // ! apply just for 'CubeRefractionMapping' changing the 'deep' of the image
-meshBasicMaterialFolder.open();
+// meshBasicMaterialFolder
+//   .add(material, "combine", options.combine)
+//   .onChange(() => updateMaterial()); // ! use to combine layers of textures
+// meshBasicMaterialFolder.add(material, "reflectivity", 0, 1); // ! Control how much the texture will appear, like opacity
+// meshBasicMaterialFolder.add(material, "refractionRatio", 0, 1); // ! apply just for 'CubeRefractionMapping' changing the 'deep' of the image
+// meshBasicMaterialFolder.open();
+
+/* Folder for MeshNormalMaterial */
+const meshNormalMaterialFolder = gui.addFolder("THREE.MeshNormalMaterial");
+
+meshNormalMaterialFolder.add(material, "wireframe");
+meshNormalMaterialFolder
+  .add(material, "flatShading")
+  .onChange(() => updateMaterial());
+meshNormalMaterialFolder.open();
 
 function updateMaterial() {
   material.side = Number(material.side) as THREE.Side;
-  material.combine = Number(material.combine) as THREE.Combine;
+  // material.combine = Number(material.combine) as THREE.Combine;
   material.needsUpdate = true;
 }
 
