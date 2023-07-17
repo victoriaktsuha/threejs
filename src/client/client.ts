@@ -97,13 +97,13 @@ new OrbitControls(camera, renderer.domElement); // ! alows to the user interact 
 // !The line above allows to update the render just when we have some change, like when the user manipulate the object. In reverse, we're using the render in animation and resize.
 // controls.target.set(5, -2, -5);
 
-// const light1 = new THREE.PointLight(0xffffff, 2);
-// light1.position.set(10, 10, 10); // ! set(x position, y position, z position)
-// scene.add(light1);
+const light1 = new THREE.PointLight(0xffffff, 2);
+light1.position.set(10, 10, 10); // ! set(x position, y position, z position)
+scene.add(light1);
 
-// const light2 = new THREE.PointLight(0xffffff, 2);
-// light2.position.set(-10, -10, -10);
-// scene.add(light2);
+const light2 = new THREE.PointLight(0xffffff, 2);
+light2.position.set(-10, -10, -10);
+scene.add(light2);
 
 // const object1 = new THREE.Mesh(
 //   new THREE.SphereGeometry(),
@@ -156,7 +156,8 @@ console.log(boxGeometry); // ! here we can access the array with all the points 
 
 // const material = new THREE.MeshBasicMaterial(); // ! MeshBasicMaterial doesn't have 'shadows', object get flat
 // const material = new THREE.MeshNormalMaterial(); // ! Doesn't need lighting
-const material = new THREE.MeshLambertMaterial(); // ! Need lighting (Mesh.PointLight)
+// const material = new THREE.MeshLambertMaterial(); // ! Need lighting (Mesh.PointLight); defines an ideal matte or diffusely reflecting surface. Examples may be wood, or stone. Generally objects that aren't shiny, but are still affected by lighting.
+const material = new THREE.MeshPhongMaterial(); // ! It is useful for simulating shiny objects such as polished wood, but it's computationally-expensive
 
 const texture = new THREE.TextureLoader().load("img/grid.png");
 material.map = texture; // ! apply texture loaded above to material defined previously - texture ≠ color
@@ -171,7 +172,6 @@ const envTexture = new THREE.CubeTextureLoader().load([
 envTexture.mapping = THREE.CubeReflectionMapping; // ! Apply the 6 images in a 360º view
 // envTexture.mapping = THREE.CubeRefractionMapping;
 material.envMap = envTexture;
-// material.needsUpdate = true;
 
 // ! create cube object
 const cube = new THREE.Mesh(boxGeometry, material); // ! when we crate a mesh, the constructor needs some kind of geometry, and the geometry that we're passing has BufferGeometry as base class, like all geometries. It saves all data in buffers to reduce memory and CPU cycles
@@ -493,28 +493,59 @@ materialFolder.open();
 
 /* Folder for MeshLambertMaterial */
 
+// const data = {
+//   color: material.color.getHex(),
+//   emissive: material.emissive.getHex(), // ! With emissive, the light/shadow that the object itself has, MeshLambertMaterial doens't need the Mesh.PointLight
+// };
+
+// const meshLambertMaterialFolder = gui.addFolder("THREE.MeshLambertMaterial");
+
+// meshLambertMaterialFolder.addColor(data, "color").onChange(() => {
+//   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
+// });
+// meshLambertMaterialFolder.addColor(data, "emissive").onChange(() => {
+//   material.emissive.setHex(Number(data.emissive.toString().replace("#", "0x")));
+// }); // ! emissive can be useful if your background is a constant color
+// meshLambertMaterialFolder.add(material, "wireframe");
+// meshLambertMaterialFolder.add(material, "wireframeLinewidth", 0, 10);
+// //meshLambertMaterialFolder.add(material, 'flatShading').onChange(() => updateMaterial())
+// meshLambertMaterialFolder
+//   .add(material, "combine", options.combine)
+//   .onChange(() => updateMaterial());
+// meshLambertMaterialFolder.add(material, "reflectivity", 0, 1);
+// meshLambertMaterialFolder.add(material, "refractionRatio", 0, 1);
+// meshLambertMaterialFolder.open();
+
+/* Folder for MeshPhongMaterial */
+
 const data = {
   color: material.color.getHex(),
-  emissive: material.emissive.getHex(), // ! With emissive, the light/shadow that the object itself has, MeshLambertMaterial doens't need the Mesh.PointLight
+  emissive: material.emissive.getHex(),
+  specular: material.specular.getHex(), // ! define the shine color
 };
 
-const meshLambertMaterialFolder = gui.addFolder("THREE.MeshLambertMaterial");
-
-meshLambertMaterialFolder.addColor(data, "color").onChange(() => {
+const meshPhongMaterialFolder = gui.addFolder("THREE.MeshPhongMaterial");
+meshPhongMaterialFolder.addColor(data, "color").onChange(() => {
   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
 });
-meshLambertMaterialFolder.addColor(data, "emissive").onChange(() => {
+meshPhongMaterialFolder.addColor(data, "emissive").onChange(() => {
   material.emissive.setHex(Number(data.emissive.toString().replace("#", "0x")));
-}); // ! emissive can be useful if your background is a constant color
-meshLambertMaterialFolder.add(material, "wireframe");
-meshLambertMaterialFolder.add(material, "wireframeLinewidth", 0, 10);
-//meshLambertMaterialFolder.add(material, 'flatShading').onChange(() => updateMaterial())
-meshLambertMaterialFolder
+});
+meshPhongMaterialFolder.addColor(data, "specular").onChange(() => {
+  material.specular.setHex(Number(data.specular.toString().replace("#", "0x")));
+});
+meshPhongMaterialFolder.add(material, "shininess", 0, 1024); // ! more shine = less difuse is the light reflect on the object
+meshPhongMaterialFolder.add(material, "wireframe");
+// meshPhongMaterialFolder.add(material, "wireframeLinewidth", 0, 10);
+meshPhongMaterialFolder
+  .add(material, "flatShading")
+  .onChange(() => updateMaterial());
+meshPhongMaterialFolder
   .add(material, "combine", options.combine)
   .onChange(() => updateMaterial());
-meshLambertMaterialFolder.add(material, "reflectivity", 0, 1);
-meshLambertMaterialFolder.add(material, "refractionRatio", 0, 1);
-meshLambertMaterialFolder.open();
+meshPhongMaterialFolder.add(material, "reflectivity", 0, 1); // ! t affects just the upper layer fo textures
+meshPhongMaterialFolder.add(material, "refractionRatio", 0, 1);
+meshPhongMaterialFolder.open();
 
 function updateMaterial() {
   material.side = Number(material.side) as THREE.Side;
