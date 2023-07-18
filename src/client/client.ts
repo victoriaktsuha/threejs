@@ -16,7 +16,7 @@ const scene = new THREE.Scene();
 If you rotate the scene, or scale the scene, or translate its position, it will affect all if its child objects.
 You make an Object3D a child of another Object3D by using the parents add method.*/
 
-scene.background = new THREE.Color(0x000); //scene background
+scene.background = new THREE.Color(0x000000); //scene background
 scene.add(new THREE.AxesHelper(3)); //! Add axis (related to the camera) to the 3D object; The number argument repesents the lenght of the axes lines
 
 /* const scene2 = new THREE.Scene(); */
@@ -101,9 +101,9 @@ const light1 = new THREE.PointLight(0xffffff, 2);
 light1.position.set(10, 10, 10); // ! set(x position, y position, z position)
 scene.add(light1);
 
-const light2 = new THREE.PointLight(0xffffff, 2);
-light2.position.set(-10, -10, -10);
-scene.add(light2);
+// const light2 = new THREE.PointLight(0xffffff, 2);
+// light2.position.set(-10, -10, -10);
+// scene.add(light2);
 
 // const object1 = new THREE.Mesh(
 //   new THREE.SphereGeometry(),
@@ -157,21 +157,30 @@ console.log(boxGeometry); // ! here we can access the array with all the points 
 // const material = new THREE.MeshBasicMaterial(); // ! MeshBasicMaterial doesn't have 'shadows', object get flat
 // const material = new THREE.MeshNormalMaterial(); // ! Doesn't need lighting
 // const material = new THREE.MeshLambertMaterial(); // ! Need lighting (Mesh.PointLight); defines an ideal matte or diffusely reflecting surface. Examples may be wood, or stone. Generally objects that aren't shiny, but are still affected by lighting.
-const material = new THREE.MeshPhongMaterial(); // ! It is useful for simulating shiny objects such as polished wood, but it's computationally-expensive
+// const material = new THREE.MeshPhongMaterial(); // ! It is useful for simulating shiny objects such as polished wood, but it's computationally-expensive
+const material = new THREE.MeshStandardMaterial(); // ! It uses the Physically Based Rendering (PBR) model AND creates a more realistic appearance than the MeshLambertMaterial or the MeshPhongMaterial. It is also more computationally expensive.
+const material = new THREE.MeshPhysicalMaterial(); // ! It is an extension of the MeshStandardMaterial which gives more reflectivity options.
 
 const texture = new THREE.TextureLoader().load("img/grid.png");
 material.map = texture; // ! apply texture loaded above to material defined previously - texture ≠ color
-const envTexture = new THREE.CubeTextureLoader().load([
-  "img/px_50.png",
-  "img/nx_50.png",
-  "img/py_50.png",
-  "img/ny_50.png",
-  "img/nz_50.png",
-  "img/pz_50.png",
-]); // ! these 6 images represent the 'up' view, the 'front' view and the 'down' view - 'both' sides
-envTexture.mapping = THREE.CubeReflectionMapping; // ! Apply the 6 images in a 360º view
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+const envTexture = new THREE.CubeTextureLoader().load(
+  [
+    "img/px_50.png",
+    "img/nx_50.png",
+    "img/py_50.png",
+    "img/ny_50.png",
+    "img/nz_50.png",
+    "img/pz_50.png",
+  ], // ! these 6 images represent the 'up' view, the 'front' view and the 'down' view - 'both' sides
+  () => {
+    material.envMap = pmremGenerator.fromCubemap(envTexture).texture;
+    pmremGenerator.dispose();
+  }
+);
+// envTexture.mapping = THREE.CubeReflectionMapping; // ! Apply the 6 images in a 360º view
 // envTexture.mapping = THREE.CubeRefractionMapping;
-material.envMap = envTexture;
+// material.envMap = envTexture;
 
 // ! create cube object
 const cube = new THREE.Mesh(boxGeometry, material); // ! when we crate a mesh, the constructor needs some kind of geometry, and the geometry that we're passing has BufferGeometry as base class, like all geometries. It saves all data in buffers to reduce memory and CPU cycles
@@ -227,11 +236,11 @@ const options = {
     DoubleSide: THREE.DoubleSide,
   },
   // ! Options when combining layers of textures
-  combine: {
-    MultiplyOperation: THREE.MultiplyOperation, // ! Mix textures
-    MixOperation: THREE.MixOperation, // ! overlap the layers and the underneath layer can be seen when the upper layer reflectivity is changed
-    AddOperation: THREE.AddOperation, // ! add upper texture to the underneath texture according to the reflectivity
-  },
+  // combine: {
+  //   MultiplyOperation: THREE.MultiplyOperation, // ! Mix textures
+  //   MixOperation: THREE.MixOperation, // ! overlap the layers and the underneath layer can be seen when the upper layer reflectivity is changed
+  //   AddOperation: THREE.AddOperation, // ! add upper texture to the underneath texture according to the reflectivity
+  // },
 };
 
 const gui = new GUI();
@@ -518,38 +527,61 @@ materialFolder.open();
 
 /* Folder for MeshPhongMaterial */
 
+// const data = {
+//   color: material.color.getHex(),
+//   emissive: material.emissive.getHex(),
+//   specular: material.specular.getHex(), // ! define the shine color
+// };
+
+// const meshPhongMaterialFolder = gui.addFolder("THREE.MeshPhongMaterial");
+// meshPhongMaterialFolder.addColor(data, "color").onChange(() => {
+//   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
+// });
+// meshPhongMaterialFolder.addColor(data, "emissive").onChange(() => {
+//   material.emissive.setHex(Number(data.emissive.toString().replace("#", "0x")));
+// });
+// meshPhongMaterialFolder.addColor(data, "specular").onChange(() => {
+//   material.specular.setHex(Number(data.specular.toString().replace("#", "0x")));
+// });
+// meshPhongMaterialFolder.add(material, "shininess", 0, 1024); // ! more shine = less difuse is the light reflect on the object
+// meshPhongMaterialFolder.add(material, "wireframe");
+// // meshPhongMaterialFolder.add(material, "wireframeLinewidth", 0, 10);
+// meshPhongMaterialFolder
+//   .add(material, "flatShading")
+//   .onChange(() => updateMaterial());
+// meshPhongMaterialFolder
+//   .add(material, "combine", options.combine)
+//   .onChange(() => updateMaterial());
+// meshPhongMaterialFolder.add(material, "reflectivity", 0, 1); // ! t affects just the upper layer fo textures
+// meshPhongMaterialFolder.add(material, "refractionRatio", 0, 1);
+// meshPhongMaterialFolder.open();
+
+/* Folder for MeshStandardMaterial */
+
 const data = {
   color: material.color.getHex(),
   emissive: material.emissive.getHex(),
-  specular: material.specular.getHex(), // ! define the shine color
+  // specular: material.specular.getHex(), // ! define the shine color
 };
 
-const meshPhongMaterialFolder = gui.addFolder("THREE.MeshPhongMaterial");
-meshPhongMaterialFolder.addColor(data, "color").onChange(() => {
+const meshStandardMaterialFolder = gui.addFolder("THREE.MeshStandardMaterial");
+meshStandardMaterialFolder.addColor(data, "color").onChange(() => {
   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
 });
-meshPhongMaterialFolder.addColor(data, "emissive").onChange(() => {
+meshStandardMaterialFolder.addColor(data, "emissive").onChange(() => {
   material.emissive.setHex(Number(data.emissive.toString().replace("#", "0x")));
 });
-meshPhongMaterialFolder.addColor(data, "specular").onChange(() => {
-  material.specular.setHex(Number(data.specular.toString().replace("#", "0x")));
-});
-meshPhongMaterialFolder.add(material, "shininess", 0, 1024); // ! more shine = less difuse is the light reflect on the object
-meshPhongMaterialFolder.add(material, "wireframe");
-// meshPhongMaterialFolder.add(material, "wireframeLinewidth", 0, 10);
-meshPhongMaterialFolder
+meshStandardMaterialFolder.add(material, "wireframe");
+meshStandardMaterialFolder
   .add(material, "flatShading")
   .onChange(() => updateMaterial());
-meshPhongMaterialFolder
-  .add(material, "combine", options.combine)
-  .onChange(() => updateMaterial());
-meshPhongMaterialFolder.add(material, "reflectivity", 0, 1); // ! t affects just the upper layer fo textures
-meshPhongMaterialFolder.add(material, "refractionRatio", 0, 1);
-meshPhongMaterialFolder.open();
+meshStandardMaterialFolder.add(material, "roughness", 0, 1);
+meshStandardMaterialFolder.add(material, "metalness", 0, 1);
+meshStandardMaterialFolder.open();
 
 function updateMaterial() {
   material.side = Number(material.side) as THREE.Side;
-  material.combine = Number(material.combine) as THREE.Combine;
+  // material.combine = Number(material.combine) as THREE.Combine;
   material.needsUpdate = true;
 }
 
