@@ -97,9 +97,9 @@ new OrbitControls(camera, renderer.domElement); // ! alows to the user interact 
 // !The line above allows to update the render just when we have some change, like when the user manipulate the object. In reverse, we're using the render in animation and resize.
 // controls.target.set(5, -2, -5);
 
-// const light1 = new THREE.PointLight(0xffffff, 2);
-// light1.position.set(10, 10, 10); // ! set(x position, y position, z position)
-// scene.add(light1);
+const light1 = new THREE.PointLight(0xffffff, 1);
+light1.position.set(10, 10, 10); // ! set(x position, y position, z position)
+scene.add(light1);
 
 // const light2 = new THREE.PointLight(0xffffff, 2);
 // light2.position.set(-10, -10, -10);
@@ -145,6 +145,18 @@ const TorusKnotGeometry = new THREE.TorusKnotGeometry(); // ! store knot object
 
 console.log(boxGeometry); // ! here we can access the array with all the points of the object stored by the Buffergeometrys
 
+const threeTone = new THREE.TextureLoader().load("img/threeTone.jpg");
+threeTone.minFilter = THREE.NearestFilter; // ! these lines guarantee that the shades won't be smooth, removing the cartoonish visual
+threeTone.magFilter = THREE.NearestFilter;
+
+const fourTone = new THREE.TextureLoader().load("img/fourTone.jpg");
+fourTone.minFilter = THREE.NearestFilter;
+fourTone.magFilter = THREE.NearestFilter;
+
+const fiveTone = new THREE.TextureLoader().load("img/fiveTone.jpg");
+fiveTone.minFilter = THREE.NearestFilter;
+fiveTone.magFilter = THREE.NearestFilter;
+
 // ! Define the material (in general)
 // const material = new THREE.MeshBasicMaterial({
 //   color: 0x00ff00, // ! change color
@@ -169,7 +181,10 @@ console.log(boxGeometry); // ! here we can access the array with all the points 
 // material.color = new THREE.Color(0xffffff);
 // material.ior = 1.2;
 // material.thickness = 10.0;
-const material = new THREE.MeshMatcapMaterial(); // ! MatCap (Material Capture) shader uses an image of a sphere as a view-space environment map. The image contains pre baked colours and shading.
+// const material = new THREE.MeshMatcapMaterial(); // ! MatCap (Material Capture) shader uses an image of a sphere as a view-space environment map. The image contains pre baked colours and shading.
+const material: THREE.MeshToonMaterial = new THREE.MeshToonMaterial(); /* ({
+  gradientMap: fourTone,
+}) */ // ! Toon shading or Cel shading is a type of non-photorealistic rendering technique designed to make 3D computer graphics appear more cartoonish by using less shading color instead of a smooth gradient effect. We can add the gray scale directly in this material
 
 // const texture = new THREE.TextureLoader().load("img/grid.png");
 // material.map = texture; // ! apply texture loaded above to material defined previously - texture ≠ color
@@ -199,10 +214,10 @@ const material = new THREE.MeshMatcapMaterial(); // ! MatCap (Material Capture) 
 // const matcapTexture = new THREE.TextureLoader().load(
 //   "img/matcap-red-light.png"
 // );
-const matcapTexture = new THREE.TextureLoader().load(
-  "img/matcap-green-yellow-pink.png"
-);
-material.matcap = matcapTexture;
+// const matcapTexture = new THREE.TextureLoader().load(
+//   "img/matcap-green-yellow-pink.png"
+// );
+// material.matcap = matcapTexture;
 
 // ! create cube object
 const cube = new THREE.Mesh(boxGeometry, material); // ! when we crate a mesh, the constructor needs some kind of geometry, and the geometry that we're passing has BufferGeometry as base class, like all geometries. It saves all data in buffers to reduce memory and CPU cycles
@@ -263,6 +278,12 @@ const options = {
   //   MixOperation: THREE.MixOperation, // ! overlap the layers and the underneath layer can be seen when the upper layer reflectivity is changed
   //   AddOperation: THREE.AddOperation, // ! add upper texture to the underneath texture according to the reflectivity
   // },
+  gradientMap: {
+    Default: null,
+    threeTone: "threeTone",
+    fourTone: "fourTone",
+    fiveTone: "fiveTone",
+  },
 };
 
 const gui = new GUI();
@@ -632,22 +653,50 @@ materialFolder.open();
 // meshPhysicalMaterialFolder.open();
 
 /* Folder for MeshMatcapMaterial */
+// const data = {
+//   color: material.color.getHex(),
+// };
+
+// const meshMatcapMaterialFolder = gui.addFolder("THREE.MeshMatcapMaterial");
+// meshMatcapMaterialFolder.addColor(data, "color").onChange(() => {
+//   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
+// });
+// meshMatcapMaterialFolder
+//   .add(material, "flatShading")
+//   .onChange(() => updateMaterial());
+// meshMatcapMaterialFolder.open();
+
+/* Folder for MeshToonMaterial */
 const data = {
+  lightColor: light1.color.getHex(),
   color: material.color.getHex(),
+  gradientMap: "threeTone",
 };
 
-const meshMatcapMaterialFolder = gui.addFolder("THREE.MeshMatcapMaterial");
-meshMatcapMaterialFolder.addColor(data, "color").onChange(() => {
+material.gradientMap = threeTone;
+
+const lightFolder = gui.addFolder("THREE.Light");
+lightFolder.addColor(data, "lightColor").onChange(() => {
+  light1.color.setHex(Number(data.lightColor.toString().replace("#", "0x")));
+});
+lightFolder.add(light1, "intensity", 0, 4);
+
+const meshToonMaterialFolder = gui.addFolder("THREE.MeshToonMaterial");
+meshToonMaterialFolder.addColor(data, "color").onChange(() => {
   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
 });
-meshMatcapMaterialFolder
-  .add(material, "flatShading")
+
+//shininess, specular and flatShading no longer supported in MeshToonMaterial
+
+meshToonMaterialFolder
+  .add(data, "gradientMap", options.gradientMap)
   .onChange(() => updateMaterial());
-meshMatcapMaterialFolder.open();
+meshToonMaterialFolder.open();
 
 function updateMaterial() {
   material.side = Number(material.side) as THREE.Side;
   // material.combine = Number(material.combine) as THREE.Combine;
+  material.gradientMap = eval(data.gradientMap as string);
   material.needsUpdate = true;
 }
 
