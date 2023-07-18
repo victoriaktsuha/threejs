@@ -97,9 +97,9 @@ new OrbitControls(camera, renderer.domElement); // ! alows to the user interact 
 // !The line above allows to update the render just when we have some change, like when the user manipulate the object. In reverse, we're using the render in animation and resize.
 // controls.target.set(5, -2, -5);
 
-const light1 = new THREE.PointLight(0xffffff, 2);
-light1.position.set(10, 10, 10); // ! set(x position, y position, z position)
-scene.add(light1);
+// const light1 = new THREE.PointLight(0xffffff, 2);
+// light1.position.set(10, 10, 10); // ! set(x position, y position, z position)
+// scene.add(light1);
 
 // const light2 = new THREE.PointLight(0xffffff, 2);
 // light2.position.set(-10, -10, -10);
@@ -159,38 +159,50 @@ console.log(boxGeometry); // ! here we can access the array with all the points 
 // const material = new THREE.MeshLambertMaterial(); // ! Need lighting (Mesh.PointLight); defines an ideal matte or diffusely reflecting surface. Examples may be wood, or stone. Generally objects that aren't shiny, but are still affected by lighting.
 // const material = new THREE.MeshPhongMaterial(); // ! It is useful for simulating shiny objects such as polished wood, but it's computationally-expensive
 // const material = new THREE.MeshStandardMaterial(); // ! It uses the Physically Based Rendering (PBR) model AND creates a more realistic appearance than the MeshLambertMaterial or the MeshPhongMaterial. It is also more computationally expensive.
-const material = new THREE.MeshPhysicalMaterial(); // ! It is an extension of the MeshStandardMaterial which gives more reflectivity options.
-material.reflectivity = 0;
-material.transmission = 1.0;
-material.roughness = 0.2;
-material.metalness = 0;
-material.clearcoat = 0.3;
-material.clearcoatRoughness = 0.25;
-material.color = new THREE.Color(0xffffff);
-material.ior = 1.2;
-material.thickness = 10.0;
+// const material = new THREE.MeshPhysicalMaterial(); // ! It is an extension of the MeshStandardMaterial which gives more reflectivity options.
+// material.reflectivity = 0;
+// material.transmission = 1.0;
+// material.roughness = 0.2;
+// material.metalness = 0;
+// material.clearcoat = 0.3;
+// material.clearcoatRoughness = 0.25;
+// material.color = new THREE.Color(0xffffff);
+// material.ior = 1.2;
+// material.thickness = 10.0;
+const material = new THREE.MeshMatcapMaterial(); // ! MatCap (Material Capture) shader uses an image of a sphere as a view-space environment map. The image contains pre baked colours and shading.
 
 // const texture = new THREE.TextureLoader().load("img/grid.png");
 // material.map = texture; // ! apply texture loaded above to material defined previously - texture ≠ color
-const pmremGenerator = new THREE.PMREMGenerator(renderer);
-const envTexture = new THREE.CubeTextureLoader().load(
-  [
-    "img/px_50.png",
-    "img/nx_50.png",
-    "img/py_50.png",
-    "img/ny_50.png",
-    "img/nz_50.png",
-    "img/pz_50.png",
-  ], // ! these 6 images represent the 'up' view, the 'front' view and the 'down' view - 'both' sides
-  () => {
-    material.envMap = pmremGenerator.fromCubemap(envTexture).texture;
-    pmremGenerator.dispose();
-    scene.background = material.envMap; // ! Add the 6 images textures to the scene background, creating an 360 environment
-  }
-);
+// const pmremGenerator = new THREE.PMREMGenerator(renderer);
+// const envTexture = new THREE.CubeTextureLoader().load(
+//   [
+//     "img/px_50.png",
+//     "img/nx_50.png",
+//     "img/py_50.png",
+//     "img/ny_50.png",
+//     "img/nz_50.png",
+//     "img/pz_50.png",
+//   ], // ! these 6 images represent the 'up' view, the 'front' view and the 'down' view - 'both' sides
+//   () => {
+//     material.envMap = pmremGenerator.fromCubemap(envTexture).texture;
+//     pmremGenerator.dispose();
+//     scene.background = material.envMap; // ! Add the 6 images textures to the scene background, creating an 360 environment
+//   }
+// );
 // envTexture.mapping = THREE.CubeReflectionMapping; // ! Apply the 6 images in a 360º view
 // envTexture.mapping = THREE.CubeRefractionMapping;
 // material.envMap = envTexture;
+
+// const matcapTexture = new THREE.TextureLoader().load("img/matcap-opal.png");
+// const matcapTexture = new THREE.TextureLoader().load("img/matcap-crystal.png");
+// const matcapTexture = new THREE.TextureLoader().load("img/matcap-gold.png");
+// const matcapTexture = new THREE.TextureLoader().load(
+//   "img/matcap-red-light.png"
+// );
+const matcapTexture = new THREE.TextureLoader().load(
+  "img/matcap-green-yellow-pink.png"
+);
+material.matcap = matcapTexture;
 
 // ! create cube object
 const cube = new THREE.Mesh(boxGeometry, material); // ! when we crate a mesh, the constructor needs some kind of geometry, and the geometry that we're passing has BufferGeometry as base class, like all geometries. It saves all data in buffers to reduce memory and CPU cycles
@@ -591,33 +603,47 @@ materialFolder.open();
 
 /* Folder for MeshPhysicalMaterial */
 
+// const data = {
+//   color: material.color.getHex(),
+//   emissive: material.emissive.getHex(),
+// };
+
+// const meshPhysicalMaterialFolder = gui.addFolder("THREE.MeshPhysicalMaterial");
+
+// meshPhysicalMaterialFolder.addColor(data, "color").onChange(() => {
+//   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
+// });
+// meshPhysicalMaterialFolder.addColor(data, "emissive").onChange(() => {
+//   material.emissive.setHex(Number(data.emissive.toString().replace("#", "0x")));
+// });
+
+// meshPhysicalMaterialFolder.add(material, "wireframe");
+// meshPhysicalMaterialFolder
+//   .add(material, "flatShading")
+//   .onChange(() => updateMaterial());
+// meshPhysicalMaterialFolder.add(material, "reflectivity", 0, 1);
+// meshPhysicalMaterialFolder.add(material, "roughness", 0, 1);
+// meshPhysicalMaterialFolder.add(material, "metalness", 0, 1);
+// meshPhysicalMaterialFolder.add(material, "clearcoat", 0, 1, 0.01);
+// meshPhysicalMaterialFolder.add(material, "clearcoatRoughness", 0, 1, 0.01);
+// meshPhysicalMaterialFolder.add(material, "transmission", 0, 1, 0.01);
+// meshPhysicalMaterialFolder.add(material, "ior", 1.0, 2.333);
+// meshPhysicalMaterialFolder.add(material, "thickness", 0, 10.0);
+// meshPhysicalMaterialFolder.open();
+
+/* Folder for MeshMatcapMaterial */
 const data = {
   color: material.color.getHex(),
-  emissive: material.emissive.getHex(),
 };
 
-const meshPhysicalMaterialFolder = gui.addFolder("THREE.MeshPhysicalMaterial");
-
-meshPhysicalMaterialFolder.addColor(data, "color").onChange(() => {
+const meshMatcapMaterialFolder = gui.addFolder("THREE.MeshMatcapMaterial");
+meshMatcapMaterialFolder.addColor(data, "color").onChange(() => {
   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
 });
-meshPhysicalMaterialFolder.addColor(data, "emissive").onChange(() => {
-  material.emissive.setHex(Number(data.emissive.toString().replace("#", "0x")));
-});
-
-meshPhysicalMaterialFolder.add(material, "wireframe");
-meshPhysicalMaterialFolder
+meshMatcapMaterialFolder
   .add(material, "flatShading")
   .onChange(() => updateMaterial());
-meshPhysicalMaterialFolder.add(material, "reflectivity", 0, 1);
-meshPhysicalMaterialFolder.add(material, "roughness", 0, 1);
-meshPhysicalMaterialFolder.add(material, "metalness", 0, 1);
-meshPhysicalMaterialFolder.add(material, "clearcoat", 0, 1, 0.01);
-meshPhysicalMaterialFolder.add(material, "clearcoatRoughness", 0, 1, 0.01);
-meshPhysicalMaterialFolder.add(material, "transmission", 0, 1, 0.01);
-meshPhysicalMaterialFolder.add(material, "ior", 1.0, 2.333);
-meshPhysicalMaterialFolder.add(material, "thickness", 0, 10.0);
-meshPhysicalMaterialFolder.open();
+meshMatcapMaterialFolder.open();
 
 function updateMaterial() {
   material.side = Number(material.side) as THREE.Side;
@@ -634,8 +660,8 @@ function animate() {
   // cube.rotation.x += 0.01;
   // cube.rotation.y += 0.01;
   // /* cube2.rotation.y += 0.01; */
-  torusKnot.rotation.x += 0.01;
-  torusKnot.rotation.y += 0.01;
+  // torusKnot.rotation.x += 0.01;
+  // torusKnot.rotation.y += 0.01;
 
   // controls.update();
   render();
