@@ -92,13 +92,15 @@ document.body.appendChild(renderer5.domElement); */
 
 // ! this line add the canvas to the HTMl, but you can hardcode canvas in the HTML with <canvas></canvas>
 
-new OrbitControls(camera, renderer.domElement); // ! alows to the user interact rotating/zooming in and out the object (BoxGeometry())
+const controls = new OrbitControls(camera, renderer.domElement); // ! alows to the user interact rotating/zooming in and out the object (BoxGeometry())
 // controls.addEventListener("change", render);
 // !The line above allows to update the render just when we have some change, like when the user manipulate the object. In reverse, we're using the render in animation and resize.
 // controls.target.set(5, -2, -5);
+controls.screenSpacePanning = true; // default is now true since three r118. Used so that panning up and down doesn't zoom in/out
+//controls.addEventListener('change', render)
 
 const light1 = new THREE.PointLight(0xffffff, 1);
-light1.position.set(10, 10, 10); // ! set(x position, y position, z position)
+light1.position.set(0, 5, 10); // ! set(x position, y position, z position)
 scene.add(light1);
 
 // const light2 = new THREE.PointLight(0xffffff, 2);
@@ -137,25 +139,25 @@ new OrbitControls(camera4, renderer4.domElement);
 new OrbitControls(camera5, renderer5.domElement); */
 // ! Different cameras defined before can allows us to interact with canvas separately
 
-const boxGeometry = new THREE.BoxGeometry(); // ! store cube object - here can be define width, height, lenght, etc..
-const sphereGeometry = new THREE.SphereGeometry(); // ! store sphere object
-const icosahedronGeometry = new THREE.IcosahedronGeometry(1, 0); // ! store icosahedron object - (size/deep, more/less points; more points = more round; don't apply to negative number)
-const planeGeometry = new THREE.PlaneGeometry(); // ! store plane object
-const TorusKnotGeometry = new THREE.TorusKnotGeometry(); // ! store knot object
+// const boxGeometry = new THREE.BoxGeometry(); // ! store cube object - here can be define width, height, lenght, etc..
+// const sphereGeometry = new THREE.SphereGeometry(); // ! store sphere object
+// const icosahedronGeometry = new THREE.IcosahedronGeometry(1, 0); // ! store icosahedron object - (size/deep, more/less points; more points = more round; don't apply to negative number)
+const planeGeometry = new THREE.PlaneGeometry(3.6, 1.8); // ! store plane object
+// const TorusKnotGeometry = new THREE.TorusKnotGeometry(); // ! store knot object
 
-console.log(boxGeometry); // ! here we can access the array with all the points of the object stored by the Buffergeometrys
+// console.log(boxGeometry); // ! here we can access the array with all the points of the object stored by the Buffergeometrys
 
-const threeTone = new THREE.TextureLoader().load("img/threeTone.jpg");
-threeTone.minFilter = THREE.NearestFilter; // ! these lines guarantee that the shades won't be smooth, removing the cartoonish visual
-threeTone.magFilter = THREE.NearestFilter;
+// const threeTone = new THREE.TextureLoader().load("img/threeTone.jpg");
+// threeTone.minFilter = THREE.NearestFilter; // ! these lines guarantee that the shades won't be smooth, removing the cartoonish visual
+// threeTone.magFilter = THREE.NearestFilter;
 
-const fourTone = new THREE.TextureLoader().load("img/fourTone.jpg");
-fourTone.minFilter = THREE.NearestFilter;
-fourTone.magFilter = THREE.NearestFilter;
+// const fourTone = new THREE.TextureLoader().load("img/fourTone.jpg");
+// fourTone.minFilter = THREE.NearestFilter;
+// fourTone.magFilter = THREE.NearestFilter;
 
-const fiveTone = new THREE.TextureLoader().load("img/fiveTone.jpg");
-fiveTone.minFilter = THREE.NearestFilter;
-fiveTone.magFilter = THREE.NearestFilter;
+// const fiveTone = new THREE.TextureLoader().load("img/fiveTone.jpg");
+// fiveTone.minFilter = THREE.NearestFilter;
+// fiveTone.magFilter = THREE.NearestFilter;
 
 // ! Define the material (in general)
 // const material = new THREE.MeshBasicMaterial({
@@ -169,7 +171,7 @@ fiveTone.magFilter = THREE.NearestFilter;
 // const material = new THREE.MeshBasicMaterial(); // ! MeshBasicMaterial doesn't have 'shadows', object get flat
 // const material = new THREE.MeshNormalMaterial(); // ! Doesn't need lighting
 // const material = new THREE.MeshLambertMaterial(); // ! Need lighting (Mesh.PointLight); defines an ideal matte or diffusely reflecting surface. Examples may be wood, or stone. Generally objects that aren't shiny, but are still affected by lighting.
-// const material = new THREE.MeshPhongMaterial(); // ! It is useful for simulating shiny objects such as polished wood, but it's computationally-expensive
+const material = new THREE.MeshPhongMaterial(); // ! It is useful for simulating shiny objects such as polished wood, but it's computationally-expensive
 // const material = new THREE.MeshStandardMaterial(); // ! It uses the Physically Based Rendering (PBR) model AND creates a more realistic appearance than the MeshLambertMaterial or the MeshPhongMaterial. It is also more computationally expensive.
 // const material = new THREE.MeshPhysicalMaterial(); // ! It is an extension of the MeshStandardMaterial which gives more reflectivity options.
 // material.reflectivity = 0;
@@ -182,12 +184,13 @@ fiveTone.magFilter = THREE.NearestFilter;
 // material.ior = 1.2;
 // material.thickness = 10.0;
 // const material = new THREE.MeshMatcapMaterial(); // ! MatCap (Material Capture) shader uses an image of a sphere as a view-space environment map. The image contains pre baked colours and shading.
-const material: THREE.MeshToonMaterial = new THREE.MeshToonMaterial(); /* ({
-  gradientMap: fourTone,
-}) */ // ! Toon shading or Cel shading is a type of non-photorealistic rendering technique designed to make 3D computer graphics appear more cartoonish by using less shading color instead of a smooth gradient effect. We can add the gray scale directly in this material
+//const material: THREE.MeshToonMaterial = new THREE.MeshToonMaterial();
+// /* ({gradientMap: fourTone,}) */
+// ! Toon shading or Cel shading is a type of non-photorealistic rendering technique designed to make 3D computer graphics appear more cartoonish by using less shading color instead of a smooth gradient effect. We can add the gray scale directly in this material
 
 // const texture = new THREE.TextureLoader().load("img/grid.png");
-// material.map = texture; // ! apply texture loaded above to material defined previously - texture ≠ color
+const texture = new THREE.TextureLoader().load("img/worldColour.5400x2700.jpg");
+material.map = texture; // ! apply texture loaded above to material defined previously - texture ≠ color
 // const pmremGenerator = new THREE.PMREMGenerator(renderer);
 // const envTexture = new THREE.CubeTextureLoader().load(
 //   [
@@ -197,16 +200,24 @@ const material: THREE.MeshToonMaterial = new THREE.MeshToonMaterial(); /* ({
 //     "img/ny_50.png",
 //     "img/nz_50.png",
 //     "img/pz_50.png",
-//   ], // ! these 6 images represent the 'up' view, the 'front' view and the 'down' view - 'both' sides
+//   ] // ! these 6 images represent the 'up' view, the 'front' view and the 'down' view - 'both' sides
 //   () => {
 //     material.envMap = pmremGenerator.fromCubemap(envTexture).texture;
 //     pmremGenerator.dispose();
 //     scene.background = material.envMap; // ! Add the 6 images textures to the scene background, creating an 360 environment
 //   }
 // );
-// envTexture.mapping = THREE.CubeReflectionMapping; // ! Apply the 6 images in a 360º view
+const envTexture = new THREE.CubeTextureLoader().load([
+  "img/px_eso0932a.jpg",
+  "img/nx_eso0932a.jpg",
+  "img/py_eso0932a.jpg",
+  "img/ny_eso0932a.jpg",
+  "img/pz_eso0932a.jpg",
+  "img/nz_eso0932a.jpg",
+]);
+envTexture.mapping = THREE.CubeReflectionMapping; // ! Apply the 6 images in a 360º view
 // envTexture.mapping = THREE.CubeRefractionMapping;
-// material.envMap = envTexture;
+material.envMap = envTexture;
 
 // const matcapTexture = new THREE.TextureLoader().load("img/matcap-opal.png");
 // const matcapTexture = new THREE.TextureLoader().load("img/matcap-crystal.png");
@@ -219,33 +230,39 @@ const material: THREE.MeshToonMaterial = new THREE.MeshToonMaterial(); /* ({
 // );
 // material.matcap = matcapTexture;
 
+// const specularTexture = new THREE.TextureLoader().load(
+//   "img/grayscale-test.png"
+// ); // ! when light color picked on specular selector, the lighter /white image areas will appear (since the shininess radius is reaching these areas); when darker color/black is picked, the image won't appear
+const specularTexture = new THREE.TextureLoader().load("img/earthSpecular.jpg");
+material.specularMap = specularTexture;
+
 // ! create cube object
-const cube = new THREE.Mesh(boxGeometry, material); // ! when we crate a mesh, the constructor needs some kind of geometry, and the geometry that we're passing has BufferGeometry as base class, like all geometries. It saves all data in buffers to reduce memory and CPU cycles
+// const cube = new THREE.Mesh(boxGeometry, material); // ! when we crate a mesh, the constructor needs some kind of geometry, and the geometry that we're passing has BufferGeometry as base class, like all geometries. It saves all data in buffers to reduce memory and CPU cycles
 // /* cube.scale.x = 0.5;
 // cube.scale.y = 0.5;
 // cube.scale.z = 0.5; */
-cube.position.x = 5; // ! define cube position
-scene.add(cube); // ! add cube to the scene
+// cube.position.x = 5; // ! define cube position
+// scene.add(cube); // ! add cube to the scene
 
 // ! create sphere object
-const sphere = new THREE.Mesh(sphereGeometry, material);
-sphere.position.x = 3;
-scene.add(sphere);
+// const sphere = new THREE.Mesh(sphereGeometry, material);
+// sphere.position.x = 3;
+// scene.add(sphere);
 
 // ! create icosahedron object
-const icosahedron = new THREE.Mesh(icosahedronGeometry, material);
-icosahedron.position.x = 0;
-scene.add(icosahedron);
+// const icosahedron = new THREE.Mesh(icosahedronGeometry, material);
+// icosahedron.position.x = 0;
+// scene.add(icosahedron);
 
 // ! create plane object
 const plane = new THREE.Mesh(planeGeometry, material);
-plane.position.x = -2;
+// plane.position.x = -2;
 scene.add(plane);
 
 // ! create torusKnot object
-const torusKnot = new THREE.Mesh(TorusKnotGeometry, material);
-torusKnot.position.x = -5;
-scene.add(torusKnot);
+// const torusKnot = new THREE.Mesh(TorusKnotGeometry, material);
+// torusKnot.position.x = -5;
+// scene.add(torusKnot);
 
 /* const cube2 = new THREE.Mesh(geometry, material);
 scene2.add(cube2); */
@@ -273,17 +290,18 @@ const options = {
     DoubleSide: THREE.DoubleSide,
   },
   // ! Options when combining layers of textures
-  // combine: {
-  //   MultiplyOperation: THREE.MultiplyOperation, // ! Mix textures
-  //   MixOperation: THREE.MixOperation, // ! overlap the layers and the underneath layer can be seen when the upper layer reflectivity is changed
-  //   AddOperation: THREE.AddOperation, // ! add upper texture to the underneath texture according to the reflectivity
-  // },
-  gradientMap: {
-    Default: null,
-    threeTone: "threeTone",
-    fourTone: "fourTone",
-    fiveTone: "fiveTone",
+  combine: {
+    MultiplyOperation: THREE.MultiplyOperation, // ! Mix textures
+    MixOperation: THREE.MixOperation, // ! overlap the layers and the underneath layer can be seen when the upper layer reflectivity is changed, but doens't need shininess
+    AddOperation: THREE.AddOperation, // ! add upper texture to the underneath texture according to the reflectivity
   },
+  // ! Options when MeshToonMaterial
+  // gradientMap: {
+  //   Default: null,
+  //   threeTone: "threeTone",
+  //   fourTone: "fourTone",
+  //   fiveTone: "fiveTone",
+  // },
 };
 
 const gui = new GUI();
@@ -667,36 +685,65 @@ materialFolder.open();
 // meshMatcapMaterialFolder.open();
 
 /* Folder for MeshToonMaterial */
+// const data = {
+//   lightColor: light1.color.getHex(),
+//   color: material.color.getHex(),
+//   gradientMap: "threeTone",
+// };
+
+// material.gradientMap = threeTone;
+
+// const lightFolder = gui.addFolder("THREE.Light");
+// lightFolder.addColor(data, "lightColor").onChange(() => {
+//   light1.color.setHex(Number(data.lightColor.toString().replace("#", "0x")));
+// });
+// lightFolder.add(light1, "intensity", 0, 4);
+
+// const meshToonMaterialFolder = gui.addFolder("THREE.MeshToonMaterial");
+// meshToonMaterialFolder.addColor(data, "color").onChange(() => {
+//   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
+// });
+
+// //shininess, specular and flatShading no longer supported in MeshToonMaterial
+
+// meshToonMaterialFolder
+//   .add(data, "gradientMap", options.gradientMap)
+//   .onChange(() => updateMaterial());
+// meshToonMaterialFolder.open();
+
+/* Folder for SpecularMap + MeshPhongMaterial (could be MeshLambert and MashToon)*/
 const data = {
-  lightColor: light1.color.getHex(),
   color: material.color.getHex(),
-  gradientMap: "threeTone",
+  emissive: material.emissive.getHex(),
+  specular: material.specular.getHex(), // ! specular affects the shine color and also, in a white/gray/black scale, whiter will be more affected and darker will be less affected
 };
 
-material.gradientMap = threeTone;
+const meshPhongMaterialFolder = gui.addFolder("THREE.MeshPhongMaterial");
 
-const lightFolder = gui.addFolder("THREE.Light");
-lightFolder.addColor(data, "lightColor").onChange(() => {
-  light1.color.setHex(Number(data.lightColor.toString().replace("#", "0x")));
-});
-lightFolder.add(light1, "intensity", 0, 4);
-
-const meshToonMaterialFolder = gui.addFolder("THREE.MeshToonMaterial");
-meshToonMaterialFolder.addColor(data, "color").onChange(() => {
+meshPhongMaterialFolder.addColor(data, "color").onChange(() => {
   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
 });
-
-//shininess, specular and flatShading no longer supported in MeshToonMaterial
-
-meshToonMaterialFolder
-  .add(data, "gradientMap", options.gradientMap)
+meshPhongMaterialFolder.addColor(data, "emissive").onChange(() => {
+  material.emissive.setHex(Number(data.emissive.toString().replace("#", "0x")));
+});
+meshPhongMaterialFolder.addColor(data, "specular").onChange(() => {
+  material.specular.setHex(Number(data.specular.toString().replace("#", "0x")));
+});
+meshPhongMaterialFolder.add(material, "shininess", 0, 1024);
+meshPhongMaterialFolder.add(material, "wireframe");
+meshPhongMaterialFolder
+  .add(material, "flatShading")
   .onChange(() => updateMaterial());
-meshToonMaterialFolder.open();
+meshPhongMaterialFolder
+  .add(material, "combine", options.combine)
+  .onChange(() => updateMaterial());
+meshPhongMaterialFolder.add(material, "reflectivity", 0, 1);
+meshPhongMaterialFolder.open();
 
 function updateMaterial() {
   material.side = Number(material.side) as THREE.Side;
-  // material.combine = Number(material.combine) as THREE.Combine;
-  material.gradientMap = eval(data.gradientMap as string);
+  material.combine = Number(material.combine) as THREE.Combine;
+  // material.gradientMap = eval(data.gradientMap as string);
   material.needsUpdate = true;
 }
 
