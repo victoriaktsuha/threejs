@@ -96,8 +96,8 @@ const controls = new OrbitControls(camera, renderer.domElement); // ! alows to t
 // controls.addEventListener("change", render);
 // !The line above allows to update the render just when we have some change, like when the user manipulate the object. In reverse, we're using the render in animation and resize.
 // controls.target.set(5, -2, -5);
-controls.screenSpacePanning = true; // default is now true since three r118. Used so that panning up and down doesn't zoom in/out
-//controls.addEventListener('change', render)
+// controls.screenSpacePanning = true; // default is now true since three r118. Used so that panning up and down doesn't zoom in/out
+controls.enableDamping = true;
 
 const light1 = new THREE.PointLight(0xffffff, 2);
 light1.position.set(0, 5, 10); // ! set(x position, y position, z position)
@@ -171,9 +171,9 @@ const planeGeometry = new THREE.PlaneGeometry(3.6, 1.8); // ! store plane object
 // const material = new THREE.MeshBasicMaterial(); // ! MeshBasicMaterial doesn't have 'shadows', object get flat
 // const material = new THREE.MeshNormalMaterial(); // ! Doesn't need lighting
 // const material = new THREE.MeshLambertMaterial(); // ! Need lighting (Mesh.PointLight); defines an ideal matte or diffusely reflecting surface. Examples may be wood, or stone. Generally objects that aren't shiny, but are still affected by lighting.
-//const material = new THREE.MeshPhongMaterial(); // ! It is useful for simulating shiny objects such as polished wood, but it's computationally-expensive
+const material = new THREE.MeshPhongMaterial(); // ! It is useful for simulating shiny objects such as polished wood, but it's computationally-expensive
 // const material = new THREE.MeshStandardMaterial(); // ! It uses the Physically Based Rendering (PBR) model AND creates a more realistic appearance than the MeshLambertMaterial or the MeshPhongMaterial. It is also more computationally expensive.
-const material = new THREE.MeshPhysicalMaterial({}); // ! It is an extension of the MeshStandardMaterial which gives more reflectivity options.
+// const material = new THREE.MeshPhysicalMaterial({}); // ! It is an extension of the MeshStandardMaterial which gives more reflectivity options.
 // material.reflectivity = 0;
 // material.transmission = 1.0;
 // material.roughness = 0.2;
@@ -207,17 +207,17 @@ material.map = texture; // ! apply texture loaded above to material defined prev
 //     scene.background = material.envMap; // ! Add the 6 images textures to the scene background, creating an 360 environment
 //   }
 // );
-const envTexture = new THREE.CubeTextureLoader().load([
-  "img/px_eso0932a.jpg",
-  "img/nx_eso0932a.jpg",
-  "img/py_eso0932a.jpg",
-  "img/ny_eso0932a.jpg",
-  "img/pz_eso0932a.jpg",
-  "img/nz_eso0932a.jpg",
-]);
-envTexture.mapping = THREE.CubeReflectionMapping; // ! Apply the 6 images in a 360º view
+// const envTexture = new THREE.CubeTextureLoader().load([
+//   "img/px_eso0932a.jpg",
+//   "img/nx_eso0932a.jpg",
+//   "img/py_eso0932a.jpg",
+//   "img/ny_eso0932a.jpg",
+//   "img/pz_eso0932a.jpg",
+//   "img/nz_eso0932a.jpg",
+// ]);
+// envTexture.mapping = THREE.CubeReflectionMapping; // ! Apply the 6 images in a 360º view
 // envTexture.mapping = THREE.CubeRefractionMapping;
-material.envMap = envTexture;
+// material.envMap = envTexture;
 
 // const matcapTexture = new THREE.TextureLoader().load("img/matcap-opal.png");
 // const matcapTexture = new THREE.TextureLoader().load("img/matcap-crystal.png");
@@ -233,11 +233,16 @@ material.envMap = envTexture;
 // const specularTexture = new THREE.TextureLoader().load("img/grayscale-test.png");
 // ! The SpecularMap is a texture image that affects the specular surface highlight on MeshLambertMaterial and MeshPhongMaterial materials.To adjust the intensity of the specular surface highlight, on MeshPhongMaterial, use the specular and shininess properties. Also on on the MeshPhongMaterial, to adjust the environment map intensity, use the materials reflectivity property.
 // ! when light color picked on specular selector, the lighter /white image areas will appear (since the shininess radius is reaching these areas); when darker color/black is picked, the image won't appear
-const specularTexture = new THREE.TextureLoader().load("img/earthSpecular.jpg");
+// const specularTexture = new THREE.TextureLoader().load("img/earthSpecular.jpg");
 // material.specularMap = specularTexture;
 // ! The roughnessMap and metalnessMap are the specularMap equivalents for the MeshStandardMaterial and MeshPhysicalMaterial materials.
 // material.roughnessMap = specularTexture;
-material.metalnessMap = specularTexture;
+// material.metalnessMap = specularTexture;
+
+// ! An image texture to create a bump map. Values alter the perceived depth in relation to the lights. The Bump map doesn't actually affect the geometry of the object, only the lighting.
+const bumpTexture = new THREE.TextureLoader().load("img/earth_bumpmap.jpg");
+material.bumpMap = bumpTexture;
+material.bumpScale = 0.015;
 
 // ! create cube object
 // const cube = new THREE.Mesh(boxGeometry, material); // ! when we crate a mesh, the constructor needs some kind of geometry, and the geometry that we're passing has BufferGeometry as base class, like all geometries. It saves all data in buffers to reduce memory and CPU cycles
@@ -520,21 +525,21 @@ const gui = new GUI();
 // }
 
 /* Folder for materials */
-const materialFolder = gui.addFolder("THREE.Material");
-materialFolder
-  .add(material, "transparent")
-  .onChange(() => (material.needsUpdate = true));
-materialFolder.add(material, "opacity", 0, 1, 0.01);
-materialFolder.add(material, "depthTest");
-materialFolder.add(material, "depthWrite"); // ! "Ignore" materials so we can see through the object, no matter their position
-materialFolder
-  .add(material, "alphaTest", 0, 1, 0.01)
-  .onChange(() => updateMaterial());
-materialFolder.add(material, "visible");
-materialFolder
-  .add(material, "side", options.side)
-  .onChange(() => updateMaterial());
-materialFolder.open();
+// const materialFolder = gui.addFolder("THREE.Material");
+// materialFolder
+//   .add(material, "transparent")
+//   .onChange(() => (material.needsUpdate = true));
+// materialFolder.add(material, "opacity", 0, 1, 0.01);
+// materialFolder.add(material, "depthTest");
+// materialFolder.add(material, "depthWrite"); // ! "Ignore" materials so we can see through the object, no matter their position
+// materialFolder
+//   .add(material, "alphaTest", 0, 1, 0.01)
+//   .onChange(() => updateMaterial());
+// materialFolder.add(material, "visible");
+// materialFolder
+//   .add(material, "side", options.side)
+//   .onChange(() => updateMaterial());
+// materialFolder.open();
 
 /* Folder for MeshBasicMaterial */
 // var data = {
@@ -744,39 +749,42 @@ materialFolder.open();
 // meshPhongMaterialFolder.open();
 
 /* Folder for RoughnessMap & MetalnessMap + MeshPhysicalMaterial (could be MeshStandardMaterial)*/
-const data = {
-  color: material.color.getHex(),
-  emissive: material.emissive.getHex(),
-};
+// const data = {
+//   color: material.color.getHex(),
+//   emissive: material.emissive.getHex(),
+// };
 
-const meshPhysicalMaterialFolder = gui.addFolder(
-  "THREE.meshPhysicalMaterialFolder"
-);
+// const meshPhysicalMaterialFolder = gui.addFolder(
+//   "THREE.meshPhysicalMaterialFolder"
+// );
 
-meshPhysicalMaterialFolder.addColor(data, "color").onChange(() => {
-  material.color.setHex(Number(data.color.toString().replace("#", "0x")));
-});
-meshPhysicalMaterialFolder.addColor(data, "emissive").onChange(() => {
-  material.emissive.setHex(Number(data.emissive.toString().replace("#", "0x")));
-});
-meshPhysicalMaterialFolder.add(material, "wireframe");
-meshPhysicalMaterialFolder
-  .add(material, "flatShading")
-  .onChange(() => updateMaterial());
-meshPhysicalMaterialFolder.add(material, "reflectivity", 0, 1);
-meshPhysicalMaterialFolder.add(material, "envMapIntensity", 0, 1);
-meshPhysicalMaterialFolder.add(material, "roughness", 0, 1);
-meshPhysicalMaterialFolder.add(material, "metalness", 0, 1);
-meshPhysicalMaterialFolder.add(material, "clearcoat", 0, 1, 0.01);
-meshPhysicalMaterialFolder.add(material, "clearcoatRoughness", 0, 1, 0.01);
-meshPhysicalMaterialFolder.open();
+// meshPhysicalMaterialFolder.addColor(data, "color").onChange(() => {
+//   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
+// });
+// meshPhysicalMaterialFolder.addColor(data, "emissive").onChange(() => {
+//   material.emissive.setHex(Number(data.emissive.toString().replace("#", "0x")));
+// });
+// meshPhysicalMaterialFolder.add(material, "wireframe");
+// meshPhysicalMaterialFolder
+//   .add(material, "flatShading")
+//   .onChange(() => updateMaterial());
+// meshPhysicalMaterialFolder.add(material, "reflectivity", 0, 1);
+// meshPhysicalMaterialFolder.add(material, "envMapIntensity", 0, 1);
+// meshPhysicalMaterialFolder.add(material, "roughness", 0, 1);
+// meshPhysicalMaterialFolder.add(material, "metalness", 0, 1);
+// meshPhysicalMaterialFolder.add(material, "clearcoat", 0, 1, 0.01);
+// meshPhysicalMaterialFolder.add(material, "clearcoatRoughness", 0, 1, 0.01);
+// meshPhysicalMaterialFolder.open();
 
-function updateMaterial() {
-  material.side = Number(material.side) as THREE.Side;
-  // material.combine = Number(material.combine) as THREE.Combine;
-  // material.gradientMap = eval(data.gradientMap as string);
-  material.needsUpdate = true;
-}
+/* For bumpMap */
+gui.add(material, "bumpScale", 0, 1, 0.01);
+
+// function updateMaterial() {
+//   material.side = Number(material.side) as THREE.Side;
+// material.combine = Number(material.combine) as THREE.Combine;
+// material.gradientMap = eval(data.gradientMap as string);
+//   material.needsUpdate = true;
+// }
 
 // const debug = document.getElementById("debug1") as HTMLDivElement;
 
@@ -790,7 +798,7 @@ function animate() {
   // torusKnot.rotation.x += 0.01;
   // torusKnot.rotation.y += 0.01;
 
-  // controls.update();
+  controls.update();
   render();
 
   // const object1WorldPosition = new THREE.Vector3();
