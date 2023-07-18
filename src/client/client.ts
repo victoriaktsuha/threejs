@@ -99,7 +99,7 @@ const controls = new OrbitControls(camera, renderer.domElement); // ! alows to t
 controls.screenSpacePanning = true; // default is now true since three r118. Used so that panning up and down doesn't zoom in/out
 //controls.addEventListener('change', render)
 
-const light1 = new THREE.PointLight(0xffffff, 1);
+const light1 = new THREE.PointLight(0xffffff, 2);
 light1.position.set(0, 5, 10); // ! set(x position, y position, z position)
 scene.add(light1);
 
@@ -171,9 +171,9 @@ const planeGeometry = new THREE.PlaneGeometry(3.6, 1.8); // ! store plane object
 // const material = new THREE.MeshBasicMaterial(); // ! MeshBasicMaterial doesn't have 'shadows', object get flat
 // const material = new THREE.MeshNormalMaterial(); // ! Doesn't need lighting
 // const material = new THREE.MeshLambertMaterial(); // ! Need lighting (Mesh.PointLight); defines an ideal matte or diffusely reflecting surface. Examples may be wood, or stone. Generally objects that aren't shiny, but are still affected by lighting.
-const material = new THREE.MeshPhongMaterial(); // ! It is useful for simulating shiny objects such as polished wood, but it's computationally-expensive
+//const material = new THREE.MeshPhongMaterial(); // ! It is useful for simulating shiny objects such as polished wood, but it's computationally-expensive
 // const material = new THREE.MeshStandardMaterial(); // ! It uses the Physically Based Rendering (PBR) model AND creates a more realistic appearance than the MeshLambertMaterial or the MeshPhongMaterial. It is also more computationally expensive.
-// const material = new THREE.MeshPhysicalMaterial(); // ! It is an extension of the MeshStandardMaterial which gives more reflectivity options.
+const material = new THREE.MeshPhysicalMaterial({}); // ! It is an extension of the MeshStandardMaterial which gives more reflectivity options.
 // material.reflectivity = 0;
 // material.transmission = 1.0;
 // material.roughness = 0.2;
@@ -230,11 +230,14 @@ material.envMap = envTexture;
 // );
 // material.matcap = matcapTexture;
 
-// const specularTexture = new THREE.TextureLoader().load(
-//   "img/grayscale-test.png"
-// ); // ! when light color picked on specular selector, the lighter /white image areas will appear (since the shininess radius is reaching these areas); when darker color/black is picked, the image won't appear
+// const specularTexture = new THREE.TextureLoader().load("img/grayscale-test.png");
+// ! The SpecularMap is a texture image that affects the specular surface highlight on MeshLambertMaterial and MeshPhongMaterial materials.To adjust the intensity of the specular surface highlight, on MeshPhongMaterial, use the specular and shininess properties. Also on on the MeshPhongMaterial, to adjust the environment map intensity, use the materials reflectivity property.
+// ! when light color picked on specular selector, the lighter /white image areas will appear (since the shininess radius is reaching these areas); when darker color/black is picked, the image won't appear
 const specularTexture = new THREE.TextureLoader().load("img/earthSpecular.jpg");
-material.specularMap = specularTexture;
+// material.specularMap = specularTexture;
+// ! The roughnessMap and metalnessMap are the specularMap equivalents for the MeshStandardMaterial and MeshPhysicalMaterial materials.
+// material.roughnessMap = specularTexture;
+material.metalnessMap = specularTexture;
 
 // ! create cube object
 // const cube = new THREE.Mesh(boxGeometry, material); // ! when we crate a mesh, the constructor needs some kind of geometry, and the geometry that we're passing has BufferGeometry as base class, like all geometries. It saves all data in buffers to reduce memory and CPU cycles
@@ -290,11 +293,11 @@ const options = {
     DoubleSide: THREE.DoubleSide,
   },
   // ! Options when combining layers of textures
-  combine: {
-    MultiplyOperation: THREE.MultiplyOperation, // ! Mix textures
-    MixOperation: THREE.MixOperation, // ! overlap the layers and the underneath layer can be seen when the upper layer reflectivity is changed, but doens't need shininess
-    AddOperation: THREE.AddOperation, // ! add upper texture to the underneath texture according to the reflectivity
-  },
+  // combine: {
+  //   MultiplyOperation: THREE.MultiplyOperation, // ! Mix textures
+  //   MixOperation: THREE.MixOperation, // ! overlap the layers and the underneath layer can be seen when the upper layer reflectivity is changed, but doens't need shininess
+  //   AddOperation: THREE.AddOperation, // ! add upper texture to the underneath texture according to the reflectivity
+  // },
   // ! Options when MeshToonMaterial
   // gradientMap: {
   //   Default: null,
@@ -712,37 +715,65 @@ materialFolder.open();
 // meshToonMaterialFolder.open();
 
 /* Folder for SpecularMap + MeshPhongMaterial (could be MeshLambert and MashToon)*/
+// const data = {
+//   color: material.color.getHex(),
+//   emissive: material.emissive.getHex(),
+//   specular: material.specular.getHex(), // ! specular affects the shine color and also, in a white/gray/black scale, whiter will be more affected and darker will be less affected
+// };
+
+// const meshPhongMaterialFolder = gui.addFolder("THREE.MeshPhongMaterial");
+
+// meshPhongMaterialFolder.addColor(data, "color").onChange(() => {
+//   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
+// });
+// meshPhongMaterialFolder.addColor(data, "emissive").onChange(() => {
+//   material.emissive.setHex(Number(data.emissive.toString().replace("#", "0x")));
+// });
+// meshPhongMaterialFolder.addColor(data, "specular").onChange(() => {
+//   material.specular.setHex(Number(data.specular.toString().replace("#", "0x")));
+// });
+// meshPhongMaterialFolder.add(material, "shininess", 0, 1024);
+// meshPhongMaterialFolder.add(material, "wireframe");
+// meshPhongMaterialFolder
+//   .add(material, "flatShading")
+//   .onChange(() => updateMaterial());
+// meshPhongMaterialFolder
+//   .add(material, "combine", options.combine)
+//   .onChange(() => updateMaterial());
+// meshPhongMaterialFolder.add(material, "reflectivity", 0, 1);
+// meshPhongMaterialFolder.open();
+
+/* Folder for RoughnessMap & MetalnessMap + MeshPhysicalMaterial (could be MeshStandardMaterial)*/
 const data = {
   color: material.color.getHex(),
   emissive: material.emissive.getHex(),
-  specular: material.specular.getHex(), // ! specular affects the shine color and also, in a white/gray/black scale, whiter will be more affected and darker will be less affected
 };
 
-const meshPhongMaterialFolder = gui.addFolder("THREE.MeshPhongMaterial");
+const meshPhysicalMaterialFolder = gui.addFolder(
+  "THREE.meshPhysicalMaterialFolder"
+);
 
-meshPhongMaterialFolder.addColor(data, "color").onChange(() => {
+meshPhysicalMaterialFolder.addColor(data, "color").onChange(() => {
   material.color.setHex(Number(data.color.toString().replace("#", "0x")));
 });
-meshPhongMaterialFolder.addColor(data, "emissive").onChange(() => {
+meshPhysicalMaterialFolder.addColor(data, "emissive").onChange(() => {
   material.emissive.setHex(Number(data.emissive.toString().replace("#", "0x")));
 });
-meshPhongMaterialFolder.addColor(data, "specular").onChange(() => {
-  material.specular.setHex(Number(data.specular.toString().replace("#", "0x")));
-});
-meshPhongMaterialFolder.add(material, "shininess", 0, 1024);
-meshPhongMaterialFolder.add(material, "wireframe");
-meshPhongMaterialFolder
+meshPhysicalMaterialFolder.add(material, "wireframe");
+meshPhysicalMaterialFolder
   .add(material, "flatShading")
   .onChange(() => updateMaterial());
-meshPhongMaterialFolder
-  .add(material, "combine", options.combine)
-  .onChange(() => updateMaterial());
-meshPhongMaterialFolder.add(material, "reflectivity", 0, 1);
-meshPhongMaterialFolder.open();
+meshPhysicalMaterialFolder.add(material, "reflectivity", 0, 1);
+meshPhysicalMaterialFolder.add(material, "envMapIntensity", 0, 1);
+meshPhysicalMaterialFolder.add(material, "roughness", 0, 1);
+meshPhysicalMaterialFolder.add(material, "metalness", 0, 1);
+meshPhysicalMaterialFolder.add(material, "clearcoat", 0, 1, 0.01);
+meshPhysicalMaterialFolder.add(material, "clearcoatRoughness", 0, 1, 0.01);
+meshPhysicalMaterialFolder.open();
 
 function updateMaterial() {
   material.side = Number(material.side) as THREE.Side;
-  material.combine = Number(material.combine) as THREE.Combine;
+  // material.combine = Number(material.combine) as THREE.Combine;
   // material.gradientMap = eval(data.gradientMap as string);
   material.needsUpdate = true;
 }
