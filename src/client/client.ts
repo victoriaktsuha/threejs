@@ -36,7 +36,7 @@ const camera3 = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
 const camera4 = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
 const camera5 = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10); */
 
-camera.position.z = 3;
+camera.position.z = 1;
 
 /* camera2.position.y = 2;
 camera2.lookAt(new THREE.Vector3());
@@ -100,7 +100,7 @@ const controls = new OrbitControls(camera, renderer.domElement); // ! alows to t
 controls.enableDamping = true;
 
 const light1 = new THREE.PointLight(0xffffff, 2);
-light1.position.set(0, 5, 10); // ! set(x position, y position, z position)
+light1.position.set(0, 2, 5); // ! set(x position, y position, z position)
 scene.add(light1);
 
 // const light2 = new THREE.PointLight(0xffffff, 2);
@@ -240,9 +240,17 @@ material.map = texture; // ! apply texture loaded above to material defined prev
 // material.metalnessMap = specularTexture;
 
 // ! An image texture to create a bump map. Values alter the perceived depth in relation to the lights. The Bump map doesn't actually affect the geometry of the object, only the lighting.
-const bumpTexture = new THREE.TextureLoader().load("img/earth_bumpmap.jpg");
-material.bumpMap = bumpTexture;
-material.bumpScale = 0.015;
+// const bumpTexture = new THREE.TextureLoader().load("img/earth_bumpmap.jpg");
+// material.bumpMap = bumpTexture;
+// material.bumpScale = 0.015;
+
+const normalTexture = new THREE.TextureLoader().load(
+  "img/earth_normalmap_8192x4096.jpg"
+);
+// ! Even more impressive than the bumpmap is the normalMap. The normalMap uses the rgb values of the image to affect the the lighting. It also simulates perceived depth in relation to the lights but uses a different algorithm to indicate how much to alter the lighting in the up/down and left/right directions.
+material.normalMap = normalTexture;
+// ! Use the normalScale property to alter the perceived depth. The normalScale requires a THREE.Vector2. Typically the x,y values of the normalScale would be between 0 and 1.0. I have values as high as 10 in my example to make it more extreme.
+material.normalScale.set(2, 2);
 
 // ! create cube object
 // const cube = new THREE.Mesh(boxGeometry, material); // ! when we crate a mesh, the constructor needs some kind of geometry, and the geometry that we're passing has BufferGeometry as base class, like all geometries. It saves all data in buffers to reduce memory and CPU cycles
@@ -777,7 +785,12 @@ const gui = new GUI();
 // meshPhysicalMaterialFolder.open();
 
 /* For bumpMap */
-gui.add(material, "bumpScale", 0, 1, 0.01);
+// gui.add(material, "bumpScale", 0, 1, 0.01);
+
+/* For normalMap */
+gui.add(material.normalScale, "x", 0, 10, 0.01);
+gui.add(material.normalScale, "y", 0, 10, 0.01);
+gui.add(light1.position, "x", -20, 20).name("Light Pos X");
 
 // function updateMaterial() {
 //   material.side = Number(material.side) as THREE.Side;
