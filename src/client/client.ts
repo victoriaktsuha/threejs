@@ -247,9 +247,7 @@ material.map = texture; // ! apply texture loaded above to material defined prev
 const normalTexture = new THREE.TextureLoader().load(
   "img/earth_normalmap_8192x4096.jpg"
 );
-// ! Even more impressive than the bumpmap is the normalMap. The normalMap uses the rgb values of the image to affect the the lighting. It also simulates perceived depth in relation to the lights but uses a different algorithm to indicate how much to alter the lighting in the up/down and left/right directions.
 material.normalMap = normalTexture;
-// ! Use the normalScale property to alter the perceived depth. The normalScale requires a THREE.Vector2. Typically the x,y values of the normalScale would be between 0 and 1.0. I have values as high as 10 in my example to make it more extreme.
 material.normalScale.set(2, 2);
 
 // ! create cube object
