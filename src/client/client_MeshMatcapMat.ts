@@ -38,17 +38,26 @@ const torusKnotGeometry = new THREE.TorusKnotGeometry();
 
 const material = new THREE.MeshMatcapMaterial();
 
-// const texture = new THREE.TextureLoader().load("img/grid.png")
-// material.map = texture
-// const envTexture = new THREE.CubeTextureLoader().load(["img/px_50.png", "img/nx_50.png", "img/py_50.png", "img/ny_50.png", "img/pz_50.png", "img/nz_50.png"])
-// //envTexture.mapping = THREE.CubeReflectionMapping
-// envTexture.mapping = THREE.CubeRefractionMapping
-// material.envMap = envTexture
+// const texture = new THREE.TextureLoader().load("img/grid.png");
+// material.map = texture;
+// const envTexture = new THREE.CubeTextureLoader().load([
+//   "img/px_50.png",
+//   "img/nx_50.png",
+//   "img/py_50.png",
+//   "img/ny_50.png",
+//   "img/pz_50.png",
+//   "img/nz_50.png",
+// ]);
+// envTexture.mapping = THREE.CubeReflectionMapping;
+// envTexture.mapping = THREE.CubeRefractionMapping;
+// material.envMap = envTexture;
 
-const matcapTexture = new THREE.TextureLoader().load("img/matcap-opal.png");
-//const matcapTexture = new THREE.TextureLoader().load("img/matcap-crystal.png")
+// const matcapTexture = new THREE.TextureLoader().load("img/matcap-opal.png");
+const matcapTexture = new THREE.TextureLoader().load("img/matcap-crystal.png");
 //const matcapTexture = new THREE.TextureLoader().load("img/matcap-gold.png")
-//const matcapTexture = new THREE.TextureLoader().load("img/matcap-red-light.png")
+// const matcapTexture = new THREE.TextureLoader().load(
+//   "img/matcap-red-light.png"
+// );
 //const matcapTexture = new THREE.TextureLoader().load("img/matcap-green-yellow-pink.png")
 material.matcap = matcapTexture;
 
