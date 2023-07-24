@@ -34,7 +34,14 @@ module.exports = {
   // entry: "./src/client/client_DisplacementShadow.ts",
   // entry: "./src/client/client_OrbitControls.ts",
   // entry: "./src/client/client_TrackballControls.ts",
-  entry: "./src/client/client_PointerLockControls.ts",
+  // entry: "./src/client/client_PointerLockControls.ts",
+  // entry: "./src/client/client_DragControls.ts",
+  // entry: "./src/client/client_TransformControls.ts",
+  // entry: "./src/client/client_MultipleControls.ts",
+  // entry: "./src/client/client_ObjModelLoader.ts",
+  // entry: "./src/client/client_MTLLoader.ts",
+  // entry: "./src/client/client_GLTFModelLoader.ts",
+  entry: "./src/client/client_DracoLoader.ts",
   // entry: "./src/client/client.ts",
   module: {
     rules: [
