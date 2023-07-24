@@ -41,7 +41,13 @@ module.exports = {
   // entry: "./src/client/client_ObjModelLoader.ts",
   // entry: "./src/client/client_MTLLoader.ts",
   // entry: "./src/client/client_GLTFModelLoader.ts",
-  entry: "./src/client/client_DracoLoader.ts",
+  // entry: "./src/client/client_DracoLoader.ts",
+  // entry: "./src/client/client_TexGLTF.ts",
+  // entry: "./src/client/client_PLYLoader.ts",
+  // entry: "./src/client/client_STLLoader.ts",
+  // entry: "./src/client/client_FBXLoader.ts",
+  // entry: "./src/client/client_FBXAnimatons.ts",
+  entry: "./src/client/client_GLTFAnimatons.ts",
   // entry: "./src/client/client.ts",
   module: {
     rules: [
