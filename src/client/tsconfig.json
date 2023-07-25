@@ -1,8 +1,12 @@
 {
   "compilerOptions": {
+    "target": "ES6",
     "moduleResolution": "node",
     "strict": true,
     "allowSyntheticDefaultImports": true
+    // "paths": {
+    //   "three/examples/jsm/libs/tween.module.min": ["../typings/tween.js"]
+    // }
   },
   "include": ["**/*.ts"]
 }
