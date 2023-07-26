@@ -64,8 +64,8 @@ module.exports = {
   // entry: "./src/client/client_TweenChaining.ts",
   // entry: "./src/client/client_Vector3.ts",
   // entry: "./src/client/client_Vector3Lerp.ts",
-  entry: "./src/client/client_PhysicsCannon.ts",
-  // entry: "./src/client/client_CannonDebug.ts",
+  // entry: "./src/client/client_PhysicsCannon.ts",
+  entry: "./src/client/client_CannonDebug.ts",
   // entry: "./src/client/client.ts",
   module: {
     rules: [
