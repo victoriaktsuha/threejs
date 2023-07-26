@@ -65,7 +65,12 @@ module.exports = {
   // entry: "./src/client/client_Vector3.ts",
   // entry: "./src/client/client_Vector3Lerp.ts",
   // entry: "./src/client/client_PhysicsCannon.ts",
-  entry: "./src/client/client_CannonDebug.ts",
+  // entry: "./src/client/client_CannonDebug.ts",
+  entry: "./src/client/client_CompoundsConvexPolyhedrons.ts",
+  // entry: "./src/client/client_ConvexObjBreaker.ts",
+  // entry: "./src/client/client_ConstructiveSolidGeo.ts",
+  // entry: "./src/client/client_CollisionOBB.ts",
+  // entry: "./src/client/client_ProgressIndicator.ts",
   // entry: "./src/client/client.ts",
   module: {
     rules: [
