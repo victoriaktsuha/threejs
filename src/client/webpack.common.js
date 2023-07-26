@@ -59,7 +59,12 @@ module.exports = {
   // entry: "./src/client/client_RaycasterMousePicking.ts",
   // entry: "./src/client/client_RaycasterMeasurements.ts",
   // entry: "./src/client/client_Tween.ts",
-  entry: "./src/client/client_TweenAnimationMixer.ts",
+  // entry: "./src/client/client_TweenAnimationMixer.ts",
+  // entry: "./src/client/client_TweenOrbitControl.ts",
+  // entry: "./src/client/client_TweenChaining.ts",
+  // entry: "./src/client/client_Vector3.ts",
+  entry: "./src/client/client_Vector3Lerp.ts",
+  // entry: "./src/client/client_PhysicsCannon.ts",
   // entry: "./src/client/client.ts",
   module: {
     rules: [
