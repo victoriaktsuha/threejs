@@ -118,6 +118,17 @@
         top: 10px;
         margin-left: -250px;
       } */
+
+      #pingStats {
+        position: absolute;
+        top: 60px;
+        left: 4px;
+        width: 400px;
+        height: 400px;
+        pointer-events: none;
+        color: white;
+        font-family: monospace;
+      }
     </style>
   </head>
 
@@ -151,6 +162,8 @@
 
     <!-- Progress Bar -->
     <!-- <progress value="0" max="100" id="progressBar"></progress> -->
+
+    <div id="pingStats"></div>
     <script type="module" src="bundle.js"></script>
   </body>
 </html>
