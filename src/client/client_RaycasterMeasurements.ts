@@ -188,7 +188,7 @@ function onClick() {
         drawingLine = true;
       } else {
         //finish the line
-        const positions: any = (
+        const positions = (
           line.geometry.attributes.position as THREE.BufferAttribute
         ).array;
         positions[3] = intersects[0].point.x;
@@ -213,7 +213,7 @@ function onDocumentMouseMove(event: MouseEvent) {
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects(pickableObjects, false);
     if (intersects.length > 0) {
-      const positions: any = (
+      const positions = (
         line.geometry.attributes.position as THREE.BufferAttribute
       ).array;
       const v0 = new THREE.Vector3(positions[0], positions[1], positions[2]);
